@@ -1,0 +1,117 @@
+EESchema (20090216-final)  >> Creation date: 09/02/2010 13:09:24
+
+#Cmp ( order = Reference )
+| C1         47p         
+| C2         47p         
+| C3         100nf       
+| C4         100nf       
+| C5         10uF        
+| C6         100nF       
+| C7         100nf       
+| C8         4,7uF       
+| D1         Z<=(VDD - 5,5V)  1,3W
+| D2         LED/2mA     
+| D3         3V6 0,5W    
+| D4         3V6 0,5W    
+| FB1        10uH        
+| IC1        ATmega162   
+| IC2        ULN2803/UDN2981
+| IC3        ULN2803/UDN2981
+| IC4        ULN2803/UDN2981
+| IC5        ULN2803/UDN2981
+| IC6        ATMEGA8-P   
+| J1         PWR/IN      
+| J2         PWR/OUT     
+| J3         RJ11        
+| J4         RJ11        
+| J5         RJ11        
+| J6         RJ11        
+| J7         RJ11        
+| J8         RJ11        
+| J9         RJ11        
+| J10        RJ11        
+| J11        RJ11        
+| J12        RJ11        
+| J13        USB         
+| JP1        Bootloader  
+| P1         CONN_1      
+| P2         CONN_1      
+| P3         CONN_1      
+| P4         CONN_1      
+| P5         CONN_1      
+| P6         CONN_1      
+| P7         CONN_1      
+| P8         CONN_1      
+| Q1         BS170       
+| Q2         IRF9540N    
+| R1         5K6         
+| R2         1K5         
+| R3         47K         
+| R4         270         
+| R5         100         
+| R6         1K2         
+| R7         68          
+| R8         68          
+| R9         2K2         
+| R10        1K          
+| X1         16Mhz       
+#End Cmp
+
+#Cmp ( order = Value )
+| 100          R5        
+| 100nf        C3        
+| 100nf        C4        
+| 100nF        C6        
+| 100nf        C7        
+| 10uF         C5        
+| 10uH         FB1       
+| 16Mhz        X1        
+| 1K           R10       
+| 1K2          R6        
+| 1K5          R2        
+| 270          R4        
+| 2K2          R9        
+| 3V6 0,5W     D3        
+| 3V6 0,5W     D4        
+| 4,7uF        C8        
+| 47K          R3        
+| 47p          C1        
+| 47p          C2        
+| 5K6          R1        
+| 68           R7        
+| 68           R8        
+| ATmega162    IC1       
+| ATMEGA8-P    IC6       
+| Bootloader   JP1       
+| BS170        Q1        
+| CONN_1       P1        
+| CONN_1       P2        
+| CONN_1       P3        
+| CONN_1       P4        
+| CONN_1       P5        
+| CONN_1       P6        
+| CONN_1       P7        
+| CONN_1       P8        
+| IRF9540N     Q2        
+| LED/2mA      D2        
+| PWR/IN       J1        
+| PWR/OUT      J2        
+| RJ11         J3        
+| RJ11         J4        
+| RJ11         J5        
+| RJ11         J6        
+| RJ11         J7        
+| RJ11         J8        
+| RJ11         J9        
+| RJ11         J10       
+| RJ11         J11       
+| RJ11         J12       
+| ULN2803/UDN2981 IC2       
+| ULN2803/UDN2981 IC3       
+| ULN2803/UDN2981 IC4       
+| ULN2803/UDN2981 IC5       
+| USB          J13       
+| Z<=(VDD - 5,5V)  1,3W D1        
+#End Cmp
+
+#End List

@@ -1,0 +1,107 @@
+This is the ReadMe file to the DF10CH Atmolight Controller Project.
+
+Written by: Andreas Auras (yak54@gmx.net)
+
+See the file COPYING for license information.
+
+This project uses Objective Development's firmware-only USB driver V-USB
+for Atmel AVR microcontrollers. For more information please visit
+http://www.obdev.at/vusb/
+
+
+More documentation (currently only in german language) about this project can be found at:
+
+http://www.vdr-wiki.de/wiki/index.php/VDR_Wiki:DF10CH_Atmolight_Kontroller
+
+
+This directory contains the firmware, DF10CH setup program and KiCad files of hardware design:
+
+README						The file you are currently reading
+df10ch_setup_pkg/			Python modules needed by the DF10CH setup program
+pwm_appl/					Application firmware for PWM-Prozessor
+pwm_boot/					Bootloader firmware for PWM-Prozessor
+usb_appl/					Application firmware for USB-Prozessor
+usb_boot/					Bootloader firmware for USB-Prozessor
+usbdrv/						Objective Development's firmware-only USB driver V-USB for Atmel AVR microcontrollers
+kicad/						KiCad files of hardware design: circuit and board layout
+df10ch_common.h				Common include file used by firmware
+df10ch_usb_proto.h			Include file with definitions of implemented USB communication protocol
+df10ch_setup.py				Main python script of DF10CH setup program
+setup.py					Python script used for installation of Df10CH setup program
+MANIFEST.in					File used by Python installation script
+
+
+
+----------------------
+Building the hardware:
+----------------------
+
+You will find design files of circuit and board layout for use in KiCad within the kicad/ subdirectory.
+The files are generated with KiCad version 20090216-final.
+
+
+----------------------
+Building the firmware:
+----------------------
+
+For building the firmware for the two Atmel AVR microcontrollers you need AVR-GCC (>=20090313) installed.
+Each firmware subdirectory contains a Makefile for compiling and flashing of firmware:
+
+Compiling firmware:
+
+	make
+	
+Flashing firmware with avrdude:
+
+	make prog 	--> programming of flash, fuse and lockbits
+	make flash	--> only programming of flash
+	
+Options to avrdude can be specified with:
+
+	make prog AVRDUDE="avrdude -c stk500v2 -P avrdoper"
+	
+
+Normally only the bootloaders are flash into the processors. For this you need a dedicated AVR programmer.
+The application firmware could later be flash via the DF10CH setup program.
+This has the advantage that updates of the application firmware could be easily done over the USB
+interface without the need for a dedicated AVR programmer.
+If you like you could directly flash the application firmware without the bootloaders. But you will
+lose the firmware update feature of the DF10CH setup program.
+
+
+------------------------------------
+Installation of DF10Ch setup program
+------------------------------------
+
+For running the DF10CH setup program you need a installed python environment version 2.6,
+the python modules TKinter and PyUSB and a installed libusb library.
+On debian based systems these are packages: python2.6, python-tk, python-usb, libusb-1.0-0
+
+You can start the program directly from this distribution directory with:
+
+	./df10ch_setup.py
+	
+You can also install the program to the default python installation location with:
+
+	python setup.py install
+
+Now df10ch_setup.py should be simply in your standard PATH for execution. Start it with:
+
+	df10ch_setup.py
+
+
+The setup program understands the following command line option:
+
+	-d N		Set debug level to N
+	-s N		Set number of simulated controllers. With this option you can play with
+	     		the program without having hardware.
+	     			
+
+	
+
+ 	
+  
+
+ 
+
+

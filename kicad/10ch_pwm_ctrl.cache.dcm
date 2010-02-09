@@ -1,0 +1,48 @@
+EESchema-DOCLIB  Version 2.0  09/02/2010 13:09:32
+#
+$CMP ATMEGA8-P
+D 8 Bit AVR Microcontroller, 8kB Flash, 1024B SRAM, 512B EEPROM
+K AVR avr ATMEL atmel MICROCONTROLLER microcontroller 8bit ATMEGA atmega ATMEGA8 atmega8
+$ENDCMP
+#
+$CMP C
+D Condensateur non polarise
+$ENDCMP
+#
+$CMP CONN_1
+D 1 pin
+K CONN
+$ENDCMP
+#
+$CMP CP
+D Condensateur polarise
+$ENDCMP
+#
+$CMP FILTER
+D Filtre EMI
+K EMI
+$ENDCMP
+#
+$CMP LED
+K LED
+$ENDCMP
+#
+$CMP MOS_N
+F transistors/mos/*.*
+$ENDCMP
+#
+$CMP MOS_P
+F transistors/mos/*.*
+$ENDCMP
+#
+$CMP R
+D Resistance
+K R DEV
+$ENDCMP
+#
+$CMP ZENER
+D Diode zener
+K DEV DIODE
+$ENDCMP
+#
+#End Doc Library
