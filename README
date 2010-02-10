@@ -10,10 +10,12 @@ http://projects.vdr-developer.org/projects/show/atmolight-controller
 More documentation (currently only in german language) about this project can be found at:
 http://www.vdr-wiki.de/wiki/index.php/VDR_Wiki:DF10CH_Atmolight_Kontroller
 
-
 This project uses Objective Development's firmware-only USB driver V-USB
 for Atmel AVR microcontrollers. For more information please visit
 http://www.obdev.at/vusb/
+
+See the files usbdrv/License.txt, usbdrv/CommercialLicense.txt, usbdrv/USBID-License.txt
+and usbdrv/Readme.txt for license information about using V-USB.
 
 
 This directory contains the firmware, DF10CH setup program and KiCad files of hardware design:
@@ -41,7 +43,7 @@ Building the hardware:
 
 You will find design files of circuit and board layout for use in KiCad within the kicad/ subdirectory.
 The files are generated with KiCad version 20090216-final.
-File "10ch_pwm_ctrl-Lötseite.ps" is a postscript plot of the board layout
+File "10ch_pwm_ctrl-solder-side.ps" is a postscript plot of the board layout
 File "10ch_pwm_ctrl.lst" is a list of the needed hardware components for the board
 
 You can produce other plot formats (e.g. Gerber, HPGL) and drill files by using KiCads plot features.
