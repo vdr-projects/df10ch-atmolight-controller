@@ -23,9 +23,9 @@
 ###############################################################################
 
 ## General Flags
-PROJECT = 10ch_pwm_appl
+PROJECT = df10ch_pwm_appl
 MCU = atmega162
-TARGET = 10ch_pwm_appl.elf
+TARGET = df10ch_pwm_appl.elf
 CC = avr-gcc
 AVRDUDE ?= avrdude -c stk500v2 -P avrdoper
 F_CPU ?= 16000000UL
@@ -46,7 +46,7 @@ ASMFLAGS += -x assembler-with-cpp -Wa,-gdwarf2
 
 ## Linker flags
 LDFLAGS = $(COMMON)
-LDFLAGS += -Wl,-Map=10ch_pwm_appl.map
+LDFLAGS += -Wl,-Map=df10ch_pwm_appl.map
 LDFLAGS += -Wl,-section-start=.eeprom=0x810001
 
 
@@ -61,26 +61,26 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0x01 --no-change-warnings
 INCLUDES = -I. -I..
 
 ## Objects that must be built in order to link
-OBJECTS = 10ch_pwm_appl.o
+OBJECTS = df10ch_pwm_appl.o
 
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
 
 ## Build
-all: $(TARGET) 10ch_pwm_appl.dff 10ch_pwm_appl.lss size
+all: $(TARGET) df10ch_pwm_appl.dff df10ch_pwm_appl.lss size
 
-10ch_pwm_appl.dff: 10ch_pwm_appl.hex
+df10ch_pwm_appl.dff: df10ch_pwm_appl.hex
 	echo "@DF10CH-PWM" $(FIRMWARE_VERSION) > $@
-	cat 10ch_pwm_appl.hex >> $@
+	cat df10ch_pwm_appl.hex >> $@
 	
 prog: flash
 	$(AVRDUDE) -p $(MCU) -u -Ulfuse:w:0xc0:m -Uhfuse:w:0xc9:m -Uefuse:w:0xf9:m -Ulock:w:0xef:m
 	
-flash: 10ch_pwm_appl.hex
-	$(AVRDUDE) -p $(MCU) -U flash:w:10ch_pwm_appl.hex:i
+flash: df10ch_pwm_appl.hex
+	$(AVRDUDE) -p $(MCU) -U flash:w:df10ch_pwm_appl.hex:i
 
 ## Compile
-10ch_pwm_appl.o: 10ch_pwm_appl.c ../df10ch_usb_proto.h ../df10ch_common.h
+df10ch_pwm_appl.o: df10ch_pwm_appl.c ../df10ch_usb_proto.h ../df10ch_common.h
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
 ##Link
@@ -103,4 +103,4 @@ size: ${TARGET}
 ## Clean target
 .PHONY: clean
 clean:
-	-rm -rf $(OBJECTS) 10ch_pwm_appl.elf 10ch_pwm_appl.dff 10ch_pwm_appl.hex 10ch_pwm_appl.eep 10ch_pwm_appl.lss 10ch_pwm_appl.map
+	-rm -rf $(OBJECTS) df10ch_pwm_appl.elf df10ch_pwm_appl.dff df10ch_pwm_appl.hex df10ch_pwm_appl.eep df10ch_pwm_appl.lss df10ch_pwm_appl.map

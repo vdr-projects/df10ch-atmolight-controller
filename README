@@ -19,6 +19,7 @@ http://www.obdev.at/vusb/
 This directory contains the firmware, DF10CH setup program and KiCad files of hardware design:
 
 README                The file you are currently reading
+Makfile               Makefile for generating everything
 df10ch_setup_pkg/     Python modules needed by the DF10CH setup program
 pwm_appl/             Application firmware for PWM-Prozessor
 pwm_boot/             Bootloader firmware for PWM-Prozessor
