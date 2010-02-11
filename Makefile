@@ -21,23 +21,34 @@
 # Build all distribution tar files
 # ################################
 
-all: clean
+FIRMWARE_DIRS = usb_boot usb_appl pwm_boot pwm_appl
+.PHONY: all dist srcdist clean firmware $(FIRMWARE_DIRS)
+
+all: firmware
+
+# Build binary distribution (setup program and *.dff firmware files)
+dist: clean firmware
 	mkdir -p dist
 	mkdir -p build/firmware
 	python setup.py sdist
-	(cd usb_boot && make)
-	(cd usb_appl && make)
-	(cd pwm_boot && make)
-	(cd pwm_appl && make)
 	cp usb_appl/df10ch_usb_appl.dff build/firmware/df10ch_usb_appl.dff
 	cp pwm_appl/df10ch_pwm_appl.dff build/firmware/df10ch_pwm_appl.dff
-	(cd build && tar cvzf ../dist/df10ch_firmware.tar.gz firmware)
+	tar -C build -cvzf dist/df10ch_firmware.tar.gz firmware
+
+# Build source distribution
+srcdist: clean
+	mkdir -p dist
+	tar -cvz --exclude build --exclude dist --exclude '\..*' --exclude 'kicad/*\.bak' --exclude 'kicad/*\.000' --exclude 'kicad/*savepcb*' --exclude "*pyc" -f dist/df10ch_src_dist.tar.gz *
+	
+# Build firmware
+firmware: $(FIRMWARE_DIRS)
+
+$(FIRMWARE_DIRS):
+	$(MAKE) -C $@
 
 ## Clean target
-.PHONY: clean
 clean:
-	(cd usb_boot && make clean)
-	(cd usb_appl && make clean)
-	(cd pwm_boot && make clean)
-	(cd pwm_appl && make clean)
+	for dir in $(FIRMWARE_DIRS); do \
+		$(MAKE) -C $$dir clean; \
+	done
 	rm -rf build MANIFEST

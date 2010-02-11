@@ -44,6 +44,7 @@ Building the hardware:
 You will find design files of circuit and board layout for use in KiCad within the kicad/ subdirectory.
 The files are generated with KiCad version 20090216-final.
 File "10ch_pwm_ctrl-solder-side.ps" is a postscript plot of the board layout
+File "10ch_pwm_ctrl-silks_cmp.ps" is a postscript plot of the component placement
 File "10ch_pwm_ctrl.lst" is a list of the needed hardware components for the board
 
 You can produce other plot formats (e.g. Gerber, HPGL) and drill files by using KiCads plot features.
