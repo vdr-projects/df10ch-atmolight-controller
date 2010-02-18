@@ -35,7 +35,7 @@ from df10ch_setup_pkg.white_cal_dlg import WhiteCalDialog
 from df10ch_setup_pkg.bright_dlg import BrightDialog
 import df10ch_setup_pkg.device_drv
 
-TITLE = "DF10CH Setup V1"
+TITLE = "DF10CH Setup V2"
 print 
 parser = OptionParser(version=TITLE)
 parser.add_option("-s", "--simulate", action="store", type="int", dest="simulate", default=0, help="Set simulated number of DF10CH controller's")

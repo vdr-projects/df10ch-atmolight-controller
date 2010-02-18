@@ -23,7 +23,7 @@
 
 from distutils.core import setup
 setup(name='df10ch_setup',
-      version='1',
+      version='2',
       description='DF10CH Setup program',
       author='Andreas Auras',
       author_email='yak54@gmx.net',

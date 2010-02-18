@@ -356,7 +356,7 @@ class DeviceDialog:
                                     i = i + 1
                             if firstPage:
                                 ctrl.write_flash_page(firstPage.baseAddr, firstPage.data)
-                            time.sleep(1.0)
+                            time.sleep(3.0)
 
                             i = 1
                             for fp in fw.pageList:
@@ -364,7 +364,7 @@ class DeviceDialog:
                                 data = ctrl.read_flash(fp.baseAddr, fp.pageSize)
                                 fp.verify(data)
                                 i = i + 1
-                            time.sleep(1.0)
+                            time.sleep(3.0)
                     else:
                         tkMessageBox.showerror(self.root.winfo_toplevel().title(), "{0}: Bootloader of USB controller does not start!".format(ctrl.id))
                         doFlash = False
@@ -388,7 +388,7 @@ class DeviceDialog:
                                     i = i + 1
                             if firstPage:
                                 ctrl.write_pwm_flash_page(firstPage.baseAddr, firstPage.data)
-                            time.sleep(1.0)
+                            time.sleep(3.0)
 
                             i = 1
                             for fp in fw.pageList:
@@ -396,7 +396,7 @@ class DeviceDialog:
                                 data = ctrl.read_pwm_flash(fp.baseAddr, fp.pageSize)
                                 fp.verify(data)
                                 i = i + 1
-                            time.sleep(1.0)
+                            time.sleep(3.0)
                     else:
                         tkMessageBox.showerror(self.root.winfo_toplevel().title(), "{0}: Bootloader of PWM controller does not start!".format(ctrl.id))
                         doFlash = False
