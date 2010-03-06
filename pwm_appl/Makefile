@@ -29,7 +29,7 @@ TARGET = df10ch_pwm_appl.elf
 CC = avr-gcc
 AVRDUDE ?= avrdude -c stk500v2 -P avrdoper
 F_CPU ?= 16000000UL
-FIRMWARE_VERSION ?= 1
+FIRMWARE_VERSION ?= 2
 
 ## Options common to compile, link and assembly rules
 COMMON = -mmcu=$(MCU)
