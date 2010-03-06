@@ -191,6 +191,12 @@ static uint16_t reply_timeout = REPLY_TIMEOUT;
 #define DDRD_INIT		(_BV(1))
 
 
+// ---
+// Watchdogtimer related.
+//
+#define WDTO_TIMEOUT     WDTO_120MS
+
+
 #include <usbdrv.c>
 
 
@@ -216,19 +222,17 @@ ISR(USART_RXC_vect)
 		uint8_t i = rxwpos;
 		uint8_t p = i + 1;
 		CHECK_RXBUF_END(p);
+		if (p == rxrpos)
+			set_bit(reply_err_status, COMM_ERR_OVERFLOW);
+		else
+			rxwpos = p;		// set data valid
 
 		if (bit_is_set(UCSRA, DOR))
 			set_bit(reply_err_status, COMM_ERR_OVERRUN);
-		else if (bit_is_set(UCSRA, FE))
+		if (bit_is_set(UCSRA, FE))
 			set_bit(reply_err_status, COMM_ERR_FRAME);
-		else if (p == rxrpos)
-			set_bit(reply_err_status, COMM_ERR_OVERFLOW);
-		else
-		{
-			if (bit_is_set(UCSRB, RXB8))
-				rxspos = i;	// save reply start position
-			rxwpos = p;		// set data valid
-		}
+		if (bit_is_set(UCSRB, RXB8))
+			rxspos = i;	// save reply start position
 		rxbuf[i] = UDR;	// read data
 	}
 	while (bit_is_set(UCSRA, RXC));
@@ -726,7 +730,7 @@ USB_PUBLIC usbMsgLen_t usbFunctionSetup(uint8_t data[8])
 void main(void) NORETURN;
 void main(void)
 {
-  wdt_enable(WDTO_120MS);	// Set watchdog timeout
+  wdt_enable(WDTO_TIMEOUT);
 
 		// Initialize Ports
 	PORTB = PORTB_INIT;
@@ -826,7 +830,7 @@ void main(void)
         sei();
         sleep_cpu();
         sleep_disable();
-			  wdt_enable(WDTO_30MS);
+			  wdt_enable(WDTO_TIMEOUT);
 				cli();
 				TCNT1 = 0;
 				usb_sof_time = 0;
