@@ -321,19 +321,17 @@ ISR(USART0_RXC_vect)
 		uint8_t i = rxwpos;
 		uint8_t p = i + 1;
 		CHECK_RXBUF_END(p);
-
-		if (bit_is_set(UCSR0A, FE0))
-			set_bit(rx_err_status, COMM_ERR_FRAME);
-		else if (bit_is_set(UCSR0A, DOR0))
-			set_bit(rx_err_status, COMM_ERR_OVERRUN);
-		else if (p == rxrpos)
+		if (p == rxrpos)
 			set_bit(rx_err_status, COMM_ERR_OVERFLOW);
 		else
-		{
-			if (bit_is_set(UCSR0B, RXB80))
-				rxspos = i;		// save start of request message
 			rxwpos = p;			// set data valid
-		}
+
+		if (bit_is_set(UCSR0A, DOR0))
+			set_bit(rx_err_status, COMM_ERR_OVERRUN);
+		if (bit_is_set(UCSR0A, FE0))
+			set_bit(rx_err_status, COMM_ERR_FRAME);
+		if (bit_is_set(UCSR0B, RXB80))
+			rxspos = i;		// save start of request message
 	  rxbuf[i] = UDR0;	// read data
 	}
 	while (bit_is_set(UCSR0A, RXC0));
