@@ -233,12 +233,24 @@ def GetCommErrMsg(stat):
 
 
 CONFIG_VALID_ID = 0xA0A1
-CONFIG_VERSION = 0x0001
-CONFIG_CLASS_VERSION = 0x0001
+CONFIG_VERSION = 0x0002
+CONFIG_CLASS_VERSION = 0x0002
 
 DEFAULT_GAMMA_VAL = 22
 MIN_GAMMA_VAL = 10
 MAX_GAMMA_VAL = 50
+
+DEFAULT_OVERSCAN = 30
+MIN_OVERSCAN = 0
+MAX_OVERSCAN = 200
+
+DEFAULT_EDGE_WEIGHTING = 80
+MIN_EDGE_WEIGHTING = 10
+MAX_EDGE_WEIGHTING = 200
+
+DEFAULT_ANALYZE_SIZE = 1
+MIN_ANALYZE_SIZE = 0
+MAX_ANALYZE_SIZE = 5
 
 AREA_NAMES = "Top", "Bottom", "Left", "Right", "Center", "TopLeft", "TopRight", "BottomLeft", "BottomRight"
 MAX_AREAS = 30, 30, 30, 30, 1, 1, 1, 1, 1
@@ -297,7 +309,8 @@ class DF10CHController:
         self.version = version
         self.serial = serial
         self.id = 'DF10CH[{0},{1}]'.format(self.busnum, self.devnum)
-
+        self.error_count = 0
+        
     def release(self):
         self.usbdev.releaseInterface()
 
@@ -310,11 +323,14 @@ class DF10CHController:
                 retry = retry - 1
                 written = self.usbdev.controlMsg(usb.ENDPOINT_OUT|usb.RECIP_DEVICE|usb.TYPE_VENDOR, req, data, value, index, timeout)
             except usb.USBError as err:
+                self.error_count = self.error_count + 1
+                print 'write req={0}, retry={1}: {2}'.format(req, retry, err.__str__())
                 if retry == 0:
-                    raise AtmoControllerError(self, err.__str__())
+                    raise AtmoControllerError(self, 'write req={0}: {1}'.format(req, err.__str__()))
             else:
                 if written != len(data):
-                    raise AtmoControllerError(self, 'could not write all payload data to device')
+                    self.error_count = self.error_count + 1
+                    raise AtmoControllerError(self, 'write req={0}: could not write all payload data'.format(req))
                 break
 
     def ctrl_read(self, req,  value = 0, index = 0, size = 0, timeout = DEF_USB_TIMEOUT, retry = DEF_RETRY):
@@ -323,27 +339,33 @@ class DF10CHController:
                 retry = retry - 1
                 data = self.usbdev.controlMsg(usb.ENDPOINT_IN|usb.RECIP_DEVICE|usb.TYPE_VENDOR, req, size, value, index, timeout)
             except usb.USBError as err:
+                print 'read req={0}, retry={1}: {2}'.format(req, retry, err.__str__())
                 if retry == 0:
-                    raise AtmoControllerError(self, err.__str__())
+                    self.error_count = self.error_count + 1
+                    raise AtmoControllerError(self, 'read req={0}: {1}'.format(req, err.__str__()))
             else:
                 if len(data) != size:
-                    raise AtmoControllerError(self, 'could not read all payload data')
+                    self.error_count = self.error_count + 1
+                    raise AtmoControllerError(self, 'read req={0}: could not read all payload data'.format(req))
                 break
         return data
 
     def pwm_ctrl_write(self, req, value, index, data, timeout = DEF_USB_TIMEOUT, retry = DEF_RETRY):
         if len(data) > MAX_PWM_REQ_PAYLOAD_SIZE:
+            self.error_count = self.error_count + 1
             raise AtmoControllerError(self, 'to many bytes in payload request data')
         self.ctrl_write(req, value, index, data, timeout, retry)
         
     def pwm_ctrl_read(self, req,  value = 0, index = 0, size = 0, timeout = DEF_USB_TIMEOUT, retry = DEF_RETRY):
         if size > MAX_PWM_REPLY_PAYLOAD_SIZE:
+            self.error_count = self.error_count + 1
             raise AtmoControllerError(self, 'to many bytes for reply payload data')
         return self.ctrl_read(req, value, index, size, timeout, retry)
 
     def verify_reply_data(self, start, data, rdata, msg):    
         for i in range(len(data)):
             if data[i] != rdata[i]:
+                self.error_count = self.error_count + 1
                 raise AtmoControllerError(self, '{4}: verify of written {3} data fails {0:04X}: write {1:02X} read {2:02X}'.format(start + i, data[i], rdata[i], msg, self.id))
 
     def read_ee_data(self, start, size):
@@ -461,6 +483,13 @@ class DF10CHController:
         data = self.pwm_ctrl_read(PWM_REQ_GET_VERSION, 0, 0, 2)
         return data[1]
     
+    def pwm_echo_test(self, testValue):
+        v = testValue & 0x0FFFF
+        i = testValue >> 16
+        data = self.pwm_ctrl_read(PWM_REQ_ECHO_TEST, v, i, 8)
+        if (data[2] + data[3] * 256) != v or (data[4] + data[5] * 256) != i:
+            raise AtmoControllerError(self, 'echo test fails for value {0}'.format(testValue))
+    
     def get_pwm_flash_page_size(self):
         data = self.pwm_ctrl_read(BL_PWM_REQ_GET_PAGE_SIZE, 0, 0, 2)
         return data[0] + data[1] * 256
@@ -493,6 +522,7 @@ class dummyController:
         self.flash = dict()
         self.pwm_vers = PWM_VERS_APPL
         self.pwm_flash = dict()
+        self.error_count = 0
         
     def _reset_setup(self):
         self.common_bright = NCOMMONBRIGHTS - 1
@@ -618,6 +648,9 @@ class dummyController:
     def get_pwm_version(self):
         return 1
 
+    def pwm_echo_test(self, testValue):
+        pass
+    
     def get_bootloader_request_error_status(self):
         return 0
     
@@ -668,23 +701,36 @@ class ControllerConfig:
         self.commonPWMRes = self.ctrl.get_common_max_pwm_value()
         self.pwmFreq = self.ctrl.get_pwm_freq()
         self.commonBright = self.ctrl.get_common_brightness()
+        self.configVersion = 0
         self.numAreas = [ 0 ] * NumBaseAreas()
-
-        eedata = self.ctrl.read_ee_data(1, 5 + len(self.numAreas) + NCHANNELS * 6)
+        self.numReqChannels = 0
+        self.analyzeSize = DEFAULT_ANALYZE_SIZE
+        self.edgeWeighting = DEFAULT_EDGE_WEIGHTING
+        self.overscan = DEFAULT_OVERSCAN
+        
+        eedata = self.ctrl.read_ee_data(1, 8 + len(self.numAreas) + NCHANNELS * 6)
         #print "read eedata:", eedata
         configValidId = eedata[0] + eedata[1] * 256
         if configValidId == CONFIG_VALID_ID:
-            configVersion = "{0:04X}".format(eedata[2] + eedata[3] * 256)
-            for p in range(len(self.numAreas)):
-                self.numAreas[p] = eedata[4 + p]
-                if self.numAreas[p] > MAX_AREAS[p]: self.numAreas = MAX_AREAS[p]
+            self.configVersion = eedata[2] + eedata[3] * 256
+            configVersionStr = "{0:04X}".format(self.configVersion)
+            p = 4
+            for i in range(len(self.numAreas)):
+                self.numAreas[i] = min(eedata[p], MAX_AREAS[i])
+                p = p + 1
+            self.numReqChannels = min(eedata[p], NCHANNELS)
+            p = p + 1
+            if self.configVersion > 1:
+                p = p + self.numReqChannels * 6
+                self.overscan = max(min(eedata[p], MAX_OVERSCAN), MIN_OVERSCAN)
+                self.analyzeSize = max(min(eedata[p + 1], MAX_ANALYZE_SIZE), MIN_ANALYZE_SIZE)
+                self.edgeWeighting = max(min(eedata[p + 2], MAX_EDGE_WEIGHTING), MIN_EDGE_WEIGHTING)
         else:
-            configVersion = ""
-        self.version = "USB:{0} PWM:{1:04X} CONFIG:{2}".format(self.ctrl.version, self.ctrl.get_pwm_version(), configVersion)
+            configVersionStr = ""
+        self.version = "USB:{0} PWM:{1:04X} CONFIG:{2}".format(self.ctrl.version, self.ctrl.get_pwm_version(), configVersionStr)
         pwmChannelMap = self.ctrl.get_channel_map(0, NCHANNELS)
         #print "read pwmChannelMap", pwmChannelMap
         self.channelMap = dict()
-        self.numReqChannels = 0
         for portName in PORT_NAME_MAP.keys():
             foundArea = None
             port, pin = PORT_NAME_MAP[portName]
@@ -694,21 +740,15 @@ class ControllerConfig:
                 outPins = channelRec['pins']
                 if outPort == port and (outPins & pin):
                     if configValidId == CONFIG_VALID_ID:
-                        p = 4 + len(self.numAreas)
-                        self.numReqChannels = eedata[p]
-                        if self.numReqChannels > NCHANNELS: self.numReqChannels = 0
-                        p = p + 1
+                        p = 5 + len(self.numAreas)
                         for i in range(self.numReqChannels):
                             if eedata[p] == reqChannel:
                                 area = AreaName(eedata[p + 1], eedata[p + 2])
                                 if area:
                                     foundArea = area
                                     color = eedata[p + 1] & 0x03
-                                    gamma = eedata[p + 3]
-                                    if gamma < MIN_GAMMA_VAL: gamma = MIN_GAMMA_VAL
-                                    if gamma > MAX_GAMMA_VAL: gamma = MAX_GAMMA_VAL
-                                    whiteCal = eedata[p + 4] + eedata[p + 5] * 256
-                                    if whiteCal > self.pwmRes: whiteCal = self.pwmRes
+                                    gamma = max(min(eedata[p + 3], MAX_GAMMA_VAL), MIN_GAMMA_VAL)
+                                    whiteCal = min((eedata[p + 4] + eedata[p + 5] * 256), self.pwmRes)
                                     break
                             p = p + 6
                     break
@@ -757,6 +797,9 @@ class ControllerConfig:
                 pwmChannelMap.append(dict(channel=reqChannel, port=port, pins=pin))
 
         eedata[4 + len(self.numAreas)] = n
+        eedata.append(self.overscan)
+        eedata.append(self.analyzeSize)
+        eedata.append(self.edgeWeighting)
 
         self.numReqChannels = 0
         while len(pwmChannelMap) < NCHANNELS:

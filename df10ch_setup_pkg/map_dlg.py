@@ -206,6 +206,7 @@ class ChannelMapDialog:
                 tkMessageBox.showerror(self.root.winfo_toplevel().title(), err.__str__())
                 return
 
+        self.areasDlg.hideEdgeWeighting()
         self.areasDlg.initAreas("black")
         self.actualCtrlId = None
         self.actualPortName = None

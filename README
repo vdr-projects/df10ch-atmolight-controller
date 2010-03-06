@@ -88,8 +88,9 @@ Installation of DF10Ch setup program
 ------------------------------------
 
 For running the DF10CH setup program you need a installed python environment version 2.6,
-the python modules TKinter and PyUSB and a installed libusb library.
-On debian based systems these are packages: python2.6, python-tk, python-usb, libusb-1.0-0
+the python modules TKinter, Image, ImageTk, ImageDraw and PyUSB and a installed libusb library.
+On debian based systems these are packages: python2.6, python-tk, python-imaging, python-imaging-tk,
+python-usb, libusb-1.0-0
 
 You can start the program directly from this distribution directory with:
 

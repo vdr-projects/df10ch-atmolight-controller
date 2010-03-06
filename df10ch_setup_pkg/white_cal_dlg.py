@@ -123,6 +123,7 @@ class WhiteCalDialog:
                 tkMessageBox.showerror(self.root.winfo_toplevel().title(), err.__str__())
                 return
 
+        self.areasDlg.hideEdgeWeighting()
         if area:
             self.selectArea(area)
         self.setBright()

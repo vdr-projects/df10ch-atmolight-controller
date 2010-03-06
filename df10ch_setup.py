@@ -35,7 +35,7 @@ from df10ch_setup_pkg.white_cal_dlg import WhiteCalDialog
 from df10ch_setup_pkg.bright_dlg import BrightDialog
 import df10ch_setup_pkg.device_drv
 
-TITLE = "DF10CH Setup V2"
+TITLE = "DF10CH Setup V3"
 print 
 parser = OptionParser(version=TITLE)
 parser.add_option("-s", "--simulate", action="store", type="int", dest="simulate", default=0, help="Set simulated number of DF10CH controller's")
@@ -65,7 +65,7 @@ else:
     top.wm_attributes("-fullscreen", fullscreen)
     root.transient(top)
 
-areasDlg = AreasDialog(top, width=width, height=height, bd=0, bg="black")
+areasDlg = AreasDialog(top, width=width, height=height, bd=0)
 areasDlg.root.grid(row=0, column=0)
 
 setupDlg = SetupDialog(root)

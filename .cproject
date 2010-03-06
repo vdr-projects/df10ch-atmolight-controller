@@ -774,6 +774,7 @@
 </profile>
 </scannerConfigBuildInfo>
 </storageModule>
+<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cconfiguration>
 <cconfiguration id="de.innot.avreclipse.configuration.app.release.179373882.1868963946.1825585251">
 <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="de.innot.avreclipse.configuration.app.release.179373882.1868963946.1825585251" moduleId="org.eclipse.cdt.core.settings" name="USBAppl">
@@ -1546,6 +1547,7 @@
 </profile>
 </scannerConfigBuildInfo>
 </storageModule>
+<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cconfiguration>
 <cconfiguration id="de.innot.avreclipse.configuration.app.release.179373882.1868963946.749902634">
 <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="de.innot.avreclipse.configuration.app.release.179373882.1868963946.749902634" moduleId="org.eclipse.cdt.core.settings" name="PWMBoot">
@@ -2318,6 +2320,7 @@
 </profile>
 </scannerConfigBuildInfo>
 </storageModule>
+<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cconfiguration>
 <cconfiguration id="de.innot.avreclipse.configuration.app.release.179373882.1868963946.749902634.870823668">
 <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="de.innot.avreclipse.configuration.app.release.179373882.1868963946.749902634.870823668" moduleId="org.eclipse.cdt.core.settings" name="PWMAppl">
@@ -3090,6 +3093,7 @@
 </profile>
 </scannerConfigBuildInfo>
 </storageModule>
+<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cconfiguration>
 <cconfiguration id="de.innot.avreclipse.configuration.app.release.179373882.1868963946.2018598583">
 <storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="de.innot.avreclipse.configuration.app.release.179373882.1868963946.2018598583" moduleId="org.eclipse.cdt.core.settings" name="Dist">
@@ -3862,6 +3866,7 @@
 </profile>
 </scannerConfigBuildInfo>
 </storageModule>
+<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cconfiguration>
 </storageModule>
 <storageModule moduleId="cdtBuildSystem" version="4.0.0">

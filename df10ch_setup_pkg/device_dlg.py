@@ -37,6 +37,7 @@ class DeviceDialog:
         self.layoutDlg = layoutDlg
         self.selectedConfig = None
         self.selectedDeviceIdx = -1
+        self.echo_test_running = False
         
         root = Frame(master, **args)
         self.root = root
@@ -74,29 +75,46 @@ class DeviceDialog:
         self.btScanDevices = Button(root, text="Scan Devices", command=self.cbScanDevices)
         self.btScanDevices.grid(row=5, column=0, padx=5, pady=5, ipadx=5)
 
-        self.btResetSetup = Button(root, text="Firmware update", command=self.cbFirmwareUpdate)
-        self.btResetSetup.grid(row=5, column=1, padx=5, pady=5, ipadx=5)
+        self.btShowStatus = Button(root, text="Show Status", command=self.cbShowStatus)
+        self.btShowStatus.grid(row=6, column=0, padx=5, pady=5, ipadx=5)
 
         self.btStoreSetup = Button(root, text="Backup", command=self.cbBackupSetup)
-        self.btStoreSetup.grid(row=5, column=2, padx=5, pady=5, ipadx=5, sticky=E)
+        self.btStoreSetup.grid(row=5, column=1, padx=5, pady=5, ipadx=5)
 
         self.btStoreSetup = Button(root, text="Restore", command=self.cbRestoreSetup)
-        self.btStoreSetup.grid(row=5, column=3, padx=5, pady=5, ipadx=5, sticky=W)
+        self.btStoreSetup.grid(row=6, column=1, padx=5, pady=5, ipadx=5)
+
+        self.btResetSetup = Button(root, text="Firmware update", command=self.cbFirmwareUpdate)
+        self.btResetSetup.grid(row=5, column=2, columnspan=4, padx=5, pady=5, ipadx=5)
+
+        self.btEchoTest = Button(root, text="Start echo test", command=self.cbEchoTest)
+        self.btEchoTest.grid(row=6, column=2, columnspan=4, padx=5, pady=5, ipadx=5)
 
         self.btResetSetup = Button(root, text="Reset Setup", command=self.cbResetSetup)
-        self.btResetSetup.grid(row=5, column=4, padx=5, pady=5, ipadx=5, sticky=E)
+        self.btResetSetup.grid(row=5, column=6, padx=5, pady=5, ipadx=5)
 
         self.btStoreSetup = Button(root, text="Store Setup", command=self.cbStoreSetup)
-        self.btStoreSetup.grid(row=5, column=5, padx=5, pady=5, ipadx=5, sticky=W)
+        self.btStoreSetup.grid(row=6, column=6, padx=5, pady=5, ipadx=5)
 
         self.varStatus = StringVar()
         self.lbStatus = Label(root, textvariable=self.varStatus, anchor=W, relief=RIDGE)
-        self.lbStatus.grid(row=6, column=0, columnspan=6, padx=0, pady=0, sticky=W+E)
+        self.lbStatus.grid(row=7, column=0, columnspan=7, padx=0, pady=0, sticky=W+E)
         
 
     def cbSheetSelected(self, event):
         if self.selectedConfig:
             self.loadDeviceValues()
+
+    def cbShowStatus(self):
+        if len(device_drv.DeviceList):
+            self.showStatus()
+
+    def cbEchoTest(self):
+        if self.echo_test_running:
+            self.echo_test_running = False
+        else:
+            if self.selectedDeviceIdx != -1:
+                self.echoTest()
         
     def cbFirmwareUpdate(self):
         if len(device_drv.DeviceList):
@@ -146,24 +164,27 @@ class DeviceDialog:
         self.scanDevices()
 
     def scanDevices(self):
-        deviceList = None
         self.selectedConfig = None
         self.selectedDeviceIdx = -1
-        while not deviceList:
+        retry = True
+        while retry:
             try:
                 device_drv.LoadConfigs()
-                if len(device_drv.DeviceList):
-                    deviceList = device_drv.DeviceList
             except (device_drv.AtmoControllerError, usb.USBError) as err:        
                 if not tkMessageBox.askretrycancel(self.root.winfo_toplevel().title(), "Scanning for controllers fails:" + err.__str__(), icon=tkMessageBox.ERROR):
-                    return False
+                    if len(device_drv.DeviceList):
+                        retry = False
+                    else:
+                        return False
             else:
-                if not deviceList:
+                if len(device_drv.DeviceList):
+                    retry = False
+                else:
                     if not tkMessageBox.askretrycancel(self.root.winfo_toplevel().title(), "No Controllers found!", icon=tkMessageBox.ERROR):
                         return False
 
         idList = ""
-        for dev in deviceList:
+        for dev in device_drv.DeviceList:
             if len(idList) > 0:
                 idList = idList + " "
             idList = idList + dev.id
@@ -426,3 +447,43 @@ class DeviceDialog:
     def displayStatus(self, msg):
         self.varStatus.set(msg)
         self.root.update_idletasks()
+
+    def showStatus(self):
+        msg = ""
+        for dev in device_drv.DeviceList:
+            request_stat = "N/A"
+            reply_stat = "N/A"
+            try:
+                rc = dev.get_reply_error_status()
+            except device_drv.AtmoControllerError as err:
+                pass
+            else:
+                reply_stat = device_drv.GetCommErrMsg(rc)
+
+            try:
+                rc = dev.get_request_error_status()
+            except device_drv.AtmoControllerError as err:
+                pass
+            else:
+                request_stat = device_drv.GetCommErrMsg(rc)
+
+            msg = msg + "{0}: ERR:{1} USB:{2} PWM:{3}\n".format(dev.id, dev.error_count, reply_stat, request_stat)
+        tkMessageBox.showinfo(self.root.winfo_toplevel().title() + " Communication status", msg)
+
+    def echoTest(self):
+        self.echo_test_running = True
+        self.btEchoTest['text'] = "Stop echo test"
+        dev = device_drv.DeviceList[self.selectedDeviceIdx]
+        testValue = 0
+        while testValue < 0x7FFFFFFF:
+            self.varStatus.set("Testing {0}: {1}".format(dev.id, testValue))
+            self.root.update()
+            if not self.echo_test_running:
+                break
+            try:
+                dev.pwm_echo_test(testValue)
+            except device_drv.AtmoControllerError as err:
+                tkMessageBox.showerror(self.root.winfo_toplevel().title(), err.__str__())
+            testValue = testValue + 1
+        self.varStatus.set("")
+        self.btEchoTest['text'] = "Start echo test"
