@@ -1,14 +1,14 @@
 /*
- * Copyright (C) 2009, 2010 Andreas Auras
+ * Copyright (C) 2010 Andreas Auras
  *
- * This file is part of the atmo post plugin, a plugin for the free xine video player.
+ * This file is part of the DF10CH Atmolight controller project.
  *
- * atmo post plugin is free software; you can redistribute it and/or modify
+ * DF10CH Atmolight controller is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * atmo post plugin is distributed in the hope that it will be useful,
+ * DF10CH Atmolight controller is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -18,6 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
  */
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -26,13 +27,8 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/time.h>
-
-
-/***************************************************************************************************
- *    DF10CH output driver for my own designed "next generation" 10ch RGB Controller
- ***************************************************************************************************/
-
 #include <libusb.h>
+
 #include "../df10ch_usb_proto.h"
 
 #define DF10CH_USB_CFG_VENDOR_ID     0x16c0
