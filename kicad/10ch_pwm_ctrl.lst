@@ -1,4 +1,4 @@
-EESchema (20090216-final)  >> Creation date: 09/02/2010 13:09:24
+EESchema (20090216-final)  >> Creation date: Mo 08 Mär 2010 11:21:43 CET
 
 #Cmp ( order = Reference )
 | C1         47p         
@@ -52,7 +52,7 @@ EESchema (20090216-final)  >> Creation date: 09/02/2010 13:09:24
 | R6         1K2         
 | R7         68          
 | R8         68          
-| R9         2K2         
+| R9         1K5         
 | R10        1K          
 | X1         16Mhz       
 #End Cmp
@@ -69,8 +69,8 @@ EESchema (20090216-final)  >> Creation date: 09/02/2010 13:09:24
 | 1K           R10       
 | 1K2          R6        
 | 1K5          R2        
+| 1K5          R9        
 | 270          R4        
-| 2K2          R9        
 | 3V6 0,5W     D3        
 | 3V6 0,5W     D4        
 | 4,7uF        C8        

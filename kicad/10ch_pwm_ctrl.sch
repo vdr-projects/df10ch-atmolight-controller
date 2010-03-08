@@ -1,12 +1,12 @@
-EESchema Schematic File Version 2  date 09/02/2010 13:09:32
-LIBS:power,device,conn,linear,regul,74xx,cmos4000,adc-dac,memory,xilinx,special,microcontrollers,dsp,microchip,analog_switches,motorola,texas,intel,audio,interface,digital-audio,philips,display,cypress,siliconi,contrib,valves,.\10ch_pwm_ctrl.cache
+EESchema Schematic File Version 2  date Mo 08 Mär 2010 11:22:26 CET
+LIBS:power,device,conn,linear,regul,74xx,cmos4000,adc-dac,memory,xilinx,special,microcontrollers,dsp,microchip,analog_switches,motorola,texas,intel,audio,interface,digital-audio,philips,display,cypress,siliconi,contrib,valves,./10ch_pwm_ctrl.cache
 EELAYER 23  0
 EELAYER END
 $Descr User 8265 11692
 Sheet 1 1
 Title "DF10CH  Atmolight Controller"
 Date "16 dec 2009"
-Rev "3"
+Rev "4"
 Comp "Copyright Andreas Auras"
 Comment1 ""
 Comment2 ""
@@ -1272,7 +1272,7 @@ L R R9
 U 1 1 4B233F05
 P 5700 8900
 F 0 "R9" V 5780 8900 50  0000 C CNN
-F 1 "2K2" V 5700 8900 50  0000 C CNN
+F 1 "1K5" V 5700 8900 50  0000 C CNN
 	1    5700 8900
 	0    1    1    0   
 $EndComp

@@ -1,4 +1,4 @@
-# EESchema Netlist Version 1.1 created  09/02/2010 13:09:16
+# EESchema Netlist Version 1.1 created  Mo 08 Mär 2010 11:21:54 CET
 (
  ( /4B28D598 $noname  JP1 Bootloader {Lib=JUMPER}
   (    1 N-000088 )
@@ -132,7 +132,7 @@
   (    1 GND )
   (    2 N-000038 )
  )
- ( /4B233F05 $noname  R9 2K2 {Lib=R}
+ ( /4B233F05 $noname  R9 1K5 {Lib=R}
   (    1 N-000038 )
   (    2 N-000037 )
  )
@@ -161,9 +161,9 @@
   (    2 N-000048 )
  )
  ( /4B2338BA $noname  Q1 BS170 {Lib=MOSFET_N}
+  (    D N-000035 )
   (    G N-000048 )
   (    S GND )
-  (    D N-000035 )
  )
  ( /4B233832 $noname  D1 Z<=(VDD_-_5,5V)__1,3W {Lib=ZENER}
   (    1 N-000035 )
@@ -178,9 +178,9 @@
   (    2 N-000036 )
  )
  ( /4B23346A $noname  Q2 IRF9540N {Lib=MOSFET_P}
+  (    D N-000040 )
   (    G N-000049 )
   (    S VDD )
-  (    D N-000040 )
  )
  ( /4B232EF3 $noname  J12 RJ11 {Lib=RJ11}
   (    1 N-000017 )
@@ -507,63 +507,63 @@ $endfootprintlist
 }
 { Pin List by Nets
 Net 1 "GND" "GND"
- IC1 20
- Q1 S
- R3 1
- D2 2
- D3 1
- D4 1
- J13 4
- J13 6
- J13 5
- C6 2
- J2 3
- J1 3
- C5 2
- C4 2
- C3 2
- C2 1
- C1 1
- R1 2
- P1 1
- P4 1
- P6 1
- C8 2
- C7 2
- IC6 22
- IC6 8
  JP1 2
+ IC6 8
+ IC6 22
+ C7 2
+ C8 2
+ P6 1
+ P4 1
+ P1 1
+ R1 2
+ C1 1
+ C2 1
+ C3 2
+ C4 2
+ C5 2
+ J1 3
+ J2 3
+ C6 2
+ J13 5
+ J13 6
+ J13 4
+ D4 1
+ D3 1
+ D2 2
+ R3 1
+ Q1 S
+ IC1 20
 Net 2 "" ""
- R10 1
  IC6 17
+ R10 1
 Net 3 "" ""
- IC1 30
  R6 1
+ IC1 30
 Net 4 "" ""
- IC1 9
- R1 1
  IC6 18
+ R1 1
+ IC1 9
 Net 5 "" ""
  IC6 2
  IC1 11
 Net 6 "" ""
- IC1 29
  R2 1
+ IC1 29
 Net 7 "+5V" "+5V"
- IC1 40
  IC6 7
  IC6 20
  C3 1
  C4 1
  C5 1
  FB1 1
+ IC1 40
 Net 8 "" ""
- R8 2
  IC6 5
+ R8 2
 Net 9 "/PC1" "PC1"
+ IC3 8
  IC3 7
  IC1 22
- IC3 8
 Net 10 "" ""
  J8 1
  J8 3
@@ -575,40 +575,40 @@ Net 12 "" ""
  J9 4
  IC4 14
 Net 13 "" ""
- IC5 18
  J10 2
+ IC5 18
 Net 14 "" ""
  J10 1
- IC5 17
  J10 3
+ IC5 17
 Net 15 "" ""
- IC5 15
  J11 2
+ IC5 15
 Net 16 "" ""
- IC5 13
  J12 4
+ IC5 13
 Net 17 "" ""
- IC5 11
  J12 1
  J12 3
+ IC5 11
 Net 18 "" ""
- IC5 12
  J12 2
+ IC5 12
 Net 19 "" ""
- J9 3
  J9 1
+ J9 3
  IC4 12
 Net 20 "" ""
- IC3 13
  J7 2
+ IC3 13
 Net 21 "" ""
+ J6 1
  J6 3
  IC3 15
- J6 1
 Net 22 "" ""
+ J5 1
  J5 3
  IC3 18
- J5 1
 Net 23 "" ""
  J5 2
  IC2 11
@@ -617,8 +617,8 @@ Net 24 "" ""
  IC2 14
 Net 25 "" ""
  J3 1
- IC2 16
  J3 3
+ IC2 16
 Net 26 "" ""
  J3 2
  IC2 17
@@ -626,8 +626,8 @@ Net 27 "/PC2" "PC2"
  IC3 6
  IC1 23
 Net 28 "/PC4" "PC4"
- IC1 25
  IC3 4
+ IC1 25
 Net 29 "/PC6" "PC6"
  IC3 2
  IC1 27
@@ -645,58 +645,58 @@ Net 33 "/PA1" "PA1"
  IC1 38
 Net 34 "" ""
  FB1 2
- J13 1
  C6 1
+ J13 1
 Net 35 "" ""
- D1 1
  Q1 D
+ D1 1
 Net 36 "" ""
- R4 2
- R5 2
  D1 2
+ R5 2
+ R4 2
 Net 37 "" ""
  IC6 6
  R9 2
 Net 38 "" ""
- R8 1
+ J13 2
  D3 2
  R9 1
- J13 2
+ R8 1
 Net 39 "" ""
- R7 1
  J13 3
  D4 2
+ R7 1
 Net 40 "" ""
- P3 1
  P8 1
+ P3 1
  Q2 D
 Net 41 "" ""
- IC2 9
  P2 1
- IC4 9
  IC5 9
+ IC4 9
  IC3 9
+ IC2 9
 Net 42 "" ""
- IC4 10
- IC2 10
- IC5 10
  P5 1
+ IC5 10
+ IC4 10
  IC3 10
+ IC2 10
 Net 43 "" ""
- IC3 17
  J6 4
+ IC3 17
 Net 44 "" ""
- IC2 18
  J3 4
+ IC2 18
 Net 45 "" ""
- IC2 15
  J4 4
+ IC2 15
 Net 46 "" ""
  J7 4
  IC3 14
 Net 47 "" ""
- J7 3
  J7 1
+ J7 3
  IC3 12
 Net 48 "" ""
  R2 2
@@ -706,50 +706,50 @@ Net 49 "" ""
  R5 1
  Q2 G
 Net 50 "/PA0" "PA0"
- IC1 39
  IC2 1
+ IC1 39
 Net 51 "/PA2" "PA2"
  IC2 3
  IC1 37
 Net 52 "/PA4" "PA4"
- IC1 35
  IC2 5
+ IC1 35
 Net 53 "/PA6" "PA6"
- IC1 33
  IC2 7
+ IC1 33
 Net 54 "/PC7" "PC7"
  IC3 1
  IC1 28
 Net 55 "/PC5" "PC5"
- IC1 26
  IC3 3
+ IC1 26
 Net 56 "/PC3" "PC3"
  IC3 5
  IC1 24
 Net 57 "/PD7" "PD7"
- IC1 17
  IC4 3
+ IC1 17
 Net 58 "/PD6" "PD6"
  IC4 4
  IC1 16
 Net 59 "/PD5" "PD5"
- IC1 15
  IC4 5
+ IC1 15
 Net 60 "/PD4" "PD4"
  IC4 6
  IC1 14
 Net 61 "/PD3" "PD3"
- IC1 13
  IC4 7
+ IC1 13
 Net 62 "/PD2" "PD2"
- IC1 12
  IC4 8
+ IC1 12
 Net 63 "/PB7" "PB7"
- IC1 8
  IC5 1
+ IC1 8
 Net 64 "/PB6" "PB6"
- IC1 7
  IC5 2
+ IC1 7
 Net 65 "/PB5" "PB5"
  IC5 3
  IC1 6
@@ -757,8 +757,8 @@ Net 66 "/PB4" "PB4"
  IC5 4
  IC1 5
 Net 67 "/PB3" "PB3"
- IC1 4
  IC5 5
+ IC1 4
 Net 68 "/PB2" "PB2"
  IC5 6
  IC1 3
@@ -769,85 +769,85 @@ Net 70 "/PB0" "PB0"
  IC5 8
  IC1 1
 Net 71 "/RGB COMMON" "RGB COMMON"
- J3 6
- J3 5
  P7 1
- J4 6
- J4 5
- J5 6
- J5 5
  J12 5
  J12 6
- J8 6
- J6 6
- J6 5
- J8 5
  J11 5
  J11 6
- J9 6
- J9 5
  J10 5
  J10 6
+ J9 5
+ J9 6
+ J8 5
+ J8 6
  J7 5
  J7 6
+ J6 5
+ J6 6
+ J5 5
+ J5 6
+ J4 5
+ J4 6
+ J3 5
+ J3 6
 Net 72 "" ""
- IC2 13
- J4 3
  J4 1
+ J4 3
+ IC2 13
 Net 73 "" ""
  J5 4
  IC2 12
 Net 74 "" ""
- IC3 16
  J6 2
+ IC3 16
 Net 75 "" ""
  J10 4
  IC4 11
 Net 76 "" ""
+ J11 1
  J11 3
  IC5 14
- J11 1
 Net 77 "VDD" "VDD"
+ C7 1
  C8 1
  J1 1
- Q2 S
- C7 1
- R4 1
  J2 1
+ R4 1
+ Q2 S
 Net 78 "" ""
- IC5 16
  J11 4
+ IC5 16
 Net 79 "" ""
- IC4 13
  J9 2
+ IC4 13
 Net 80 "" ""
  J8 4
  IC4 17
 Net 81 "/PC0" "PC0"
+ IC4 2
  IC4 1
  IC1 21
- IC4 2
 Net 82 "" ""
  D2 1
  R6 2
 Net 83 "" ""
- R7 2
  IC6 4
+ R7 2
 Net 84 "" ""
- IC1 10
  IC6 3
+ IC1 10
 Net 85 "" ""
- X1 2
- IC1 19
  IC6 10
  C2 2
+ X1 2
+ IC1 19
 Net 86 "" ""
- X1 1
- C1 2
  IC6 9
+ C1 2
+ X1 1
 Net 87 "" ""
- IC1 31
  R10 2
+ IC1 31
 Net 88 "" ""
  JP1 1
  IC6 14
