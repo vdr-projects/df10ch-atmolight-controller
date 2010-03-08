@@ -1,4 +1,4 @@
-This is the ReadMe file to the DF10CH Atmolight Controller Project.
+This is the README file to the DF10CH Atmolight Controller Project.
 
 Written by: Andreas Auras (yak54@gmx.net)
 
@@ -21,6 +21,7 @@ and usbdrv/Readme.txt for license information about using V-USB.
 This directory contains the firmware, DF10CH setup program and KiCad files of hardware design:
 
 README                The file you are currently reading
+HISTORY               History of changes
 Makfile               Makefile for generating everything
 df10ch_setup_pkg/     Python modules needed by the DF10CH setup program
 pwm_appl/             Application firmware for PWM-Prozessor
@@ -28,6 +29,7 @@ pwm_boot/             Bootloader firmware for PWM-Prozessor
 usb_appl/             Application firmware for USB-Prozessor
 usb_boot/             Bootloader firmware for USB-Prozessor
 usbdrv/               Objective Development's firmware-only USB driver V-USB for Atmel AVR microcontrollers
+test_appl/            Controller test application
 kicad/                KiCad files of hardware design: circuit and board layout
 df10ch_common.h       Common include file used by firmware
 df10ch_usb_proto.h    Include file with definitions of implemented USB communication protocol
@@ -92,7 +94,7 @@ the python modules TKinter, Image, ImageTk, ImageDraw and PyUSB and a installed 
 On debian based systems these are packages: python2.6, python-tk, python-imaging, python-imaging-tk,
 python-usb, libusb-1.0-0
 
-You can start the program directly from this distribution directory with:
+You can start the program directly from the distribution directory with:
 
 	python df10ch_setup.py
 	
@@ -110,7 +112,31 @@ The setup program understands the following command line option:
 	-d N		Set debug level to N
 	-s N		Set number of simulated controllers. With this option you can play with
 	     		the program without having hardware.
-	     			
+
+
+-----------------------------------------------------
+Compiling and running the controller test application
+-----------------------------------------------------
+
+In sub directory test_appl there is a controller test application that could be executed
+at your host computer. It sends brightness values from min to max and max to min in one
+test loop to each connected controller in parallel with the maximum possible speed.
+To get maximum load at controller you should have a setup so that each controller's channel
+drives a different area. This is the initial setup of a controller if you do not have
+already changed the channel mapping with the setup program.
+
+For compiling the application you need a installed libusb library.
+On debian based systems this is packages: libusb-1.0-0.
+
+cd test_appl
+make
+
+Running the application:
+
+./df10ch-test <number-of-test-loops> 
+e.g. ./df10ch-test 50
+
+  			
 
 	
 

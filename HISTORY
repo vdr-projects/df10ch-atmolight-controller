@@ -1,0 +1,30 @@
+History of changes from newest to oldest:
+-----------------------------------------
+
+circuit revision 4
+	Changed R9 from 2K2 to 1K5
+
+USB application firmware version 2:
+	Changed USB suspend mode detection timeout from 5ms to 100ms
+	Improved error status handling
+	Fixed watch dog timeout
+
+PWM application firmware version 2:
+	Improved error status handling
+
+Controller test application version 1:
+	Added new test application
+
+Setup program version 3:
+	Added support for Edge Weighting, Overscan and Analyze Size Parameters with visualisation
+	Improved area's painting
+	Improved controller error handling
+	Added display of controller error flags
+	Added echo test 
+	Set config version to 2
+	
+Setup program version 2:
+	Increase delays within firmware update feature
+
+board layout revision 4:
+	Fixed placement of mounting pads in board layout for strapobox 7031 case

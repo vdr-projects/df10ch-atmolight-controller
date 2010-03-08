@@ -438,10 +438,13 @@ static uint16_t bright[DF10CH_MAX_CHANNELS];
 int main(int argc, char **argv) {
   int n, i, b;
 
-  if (argc > 1)
-    n = atoi(argv[1]);
-  else
-    n = 1;
+  printf("DF10CH test application V1\n");
+  if (argc != 2) {
+  	printf("usage: %s number-of-test-loops\n", argv[0]);
+  	return 1;
+  }
+
+  n = atoi(argv[1]);
 
   if (!df10ch_driver_open(&driver)) {
     int pwm_res = driver.ctrls->pwm_res - DF10CH_MAX_CHANNELS;
