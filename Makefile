@@ -48,7 +48,7 @@ $(FIRMWARE_DIRS):
 
 ## Clean target
 clean:
-	for dir in $(FIRMWARE_DIRS); do \
+	for dir in $(FIRMWARE_DIRS) test_appl; do \
 		$(MAKE) -C $$dir clean; \
 	done
 	rm -rf build MANIFEST

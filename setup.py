@@ -23,12 +23,12 @@
 
 from distutils.core import setup
 setup(name='df10ch_setup',
-      version='2',
+      version='3',
       description='DF10CH Setup program',
       author='Andreas Auras',
       author_email='yak54@gmx.net',
       url='http://www.vdr-wiki.de/wiki/index.php/VDR_Wiki:DF10CH_Atmolight_Kontroller',
-      requires=[ 'usb', 'TKinter' ],
+      requires=[ 'usb', 'TKinter', 'Image', 'ImageTk', 'ImageDraw' ],
       scripts=[ 'df10ch_setup.py' ],
       packages = [ 'df10ch_setup_pkg' ],
       )
