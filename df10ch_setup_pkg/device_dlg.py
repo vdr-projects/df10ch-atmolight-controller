@@ -43,62 +43,62 @@ class DeviceDialog:
         self.root = root
         root.bind("<Map>", self.cbSheetSelected)
 
-        Label(root, text="Device Control", font=tkFont.Font(weight="bold")).grid(row=0, column=0, columnspan=7, padx=5, pady=5)
+        Label(root, text="Device Control", font=tkFont.Font(weight="bold")).grid(row=0, column=0, columnspan=4, padx=5, pady=5)
 
         self.varDeviceList = StringVar()
         self.lbDevices = Listbox(root, selectmode=SINGLE, activestyle=NONE, width=20, height=8, listvariable=self.varDeviceList)
-        self.lbDevices.grid(row=1, column=0, columnspan=2, rowspan=4, padx=5, pady=5, sticky=N+S+E+W)
+        self.lbDevices.grid(row=1, column=0, columnspan=1, rowspan=4, padx=5, pady=5, sticky=N+S+E+W)
         self.lbDevices.bind("<ButtonRelease-1>", self.cbSelectDevice)
 
         self.varVersion = StringVar()
-        Label(root, text="Version:").grid(row=1, column=2, sticky=E)
+        Label(root, text="Version:").grid(row=1, column=1, sticky=E)
         self.etVersion = Label(root, textvariable=self.varVersion, anchor=W, relief=SUNKEN)
-        self.etVersion.grid(row=1, column=3, columnspan=4, padx=5, pady=5, sticky=W+E)
+        self.etVersion.grid(row=1, column=2, columnspan=2, padx=5, pady=5, sticky=W+E)
         
         self.varPWMRes = StringVar()
-        Label(root, text="PWM Resolution:").grid(row=2, column=2, sticky=E)
+        Label(root, text="PWM Resolution:").grid(row=2, column=1, sticky=E)
         self.etPWMRes = Label(root, textvariable=self.varPWMRes, anchor=W, relief=SUNKEN)
-        self.etPWMRes.grid(row=2, column=3, columnspan=4, padx=5, pady=5, sticky=W+E)
+        self.etPWMRes.grid(row=2, column=2, columnspan=2, padx=5, pady=5, sticky=W+E)
         
         self.varPWMFreq = IntVar()
-        Label(root, text="PWM Frequency:").grid(row=3, column=2, sticky=E)
+        Label(root, text="PWM Frequency:").grid(row=3, column=1, sticky=E)
         self.varPWMFreq.set(device_drv.MIN_PWM_FREQ)
         self.scPWMFreq = Scale(root, length=250, from_=device_drv.MIN_PWM_FREQ, to=device_drv.MAX_PWM_FREQ, resolution=1, tickinterval=50, orient=HORIZONTAL, variable=self.varPWMFreq, command=self.cbSetPWMFreq)
-        self.scPWMFreq.grid(row=3, column=3, columnspan=4, padx=5, pady=5, sticky="W")
+        self.scPWMFreq.grid(row=3, column=2, columnspan=2, padx=5, pady=5, sticky="W")
 
         self.varCommonBright = IntVar()
-        Label(root, text="Common Brightness:").grid(row=4, column=2, sticky=E)
+        Label(root, text="Common Brightness:").grid(row=4, column=1, sticky=E)
         self.varCommonBright.set(0)
         self.scCommonBright = Scale(root, length=250, from_=0, to=255, resolution=1, tickinterval=50, orient=HORIZONTAL, variable=self.varCommonBright, command=self.cbSetCommonBrightness)
-        self.scCommonBright.grid(row=4, column=3, columnspan=4, padx=5, pady=5, sticky=W)
+        self.scCommonBright.grid(row=4, column=2, columnspan=2, padx=5, pady=5, sticky=W)
 
         self.btScanDevices = Button(root, text="Scan Devices", command=self.cbScanDevices)
-        self.btScanDevices.grid(row=5, column=0, padx=5, pady=5, ipadx=5)
-
-        self.btShowStatus = Button(root, text="Show Status", command=self.cbShowStatus)
-        self.btShowStatus.grid(row=6, column=0, padx=5, pady=5, ipadx=5)
-
-        self.btStoreSetup = Button(root, text="Backup", command=self.cbBackupSetup)
-        self.btStoreSetup.grid(row=5, column=1, padx=5, pady=5, ipadx=5)
-
-        self.btStoreSetup = Button(root, text="Restore", command=self.cbRestoreSetup)
-        self.btStoreSetup.grid(row=6, column=1, padx=5, pady=5, ipadx=5)
+        self.btScanDevices.grid(row=5, column=0, columnspan=1, padx=5, pady=5, ipadx=5, sticky=W+E)
 
         self.btResetSetup = Button(root, text="Firmware update", command=self.cbFirmwareUpdate)
-        self.btResetSetup.grid(row=5, column=2, columnspan=4, padx=5, pady=5, ipadx=5)
+        self.btResetSetup.grid(row=6, column=0, columnspan=1, padx=5, pady=5, ipadx=5, sticky=W+E)
 
         self.btEchoTest = Button(root, text="Start echo test", command=self.cbEchoTest)
-        self.btEchoTest.grid(row=6, column=2, columnspan=4, padx=5, pady=5, ipadx=5)
+        self.btEchoTest.grid(row=5, column=1, columnspan=1, padx=5, pady=5, ipadx=5, sticky=W+E)
+
+        self.btShowStatus = Button(root, text="Show Status", command=self.cbShowStatus)
+        self.btShowStatus.grid(row=6, column=1, columnspan=1, padx=5, pady=5, ipadx=5, sticky=W+E)
+
+        self.btStoreSetup = Button(root, text="Restore", command=self.cbRestoreSetup)
+        self.btStoreSetup.grid(row=5, column=2, padx=5, pady=5, ipadx=5, sticky=W+E)
+
+        self.btStoreSetup = Button(root, text="Backup", command=self.cbBackupSetup)
+        self.btStoreSetup.grid(row=6, column=2, padx=5, pady=5, ipadx=5, sticky=W+E)
 
         self.btResetSetup = Button(root, text="Reset Setup", command=self.cbResetSetup)
-        self.btResetSetup.grid(row=5, column=6, padx=5, pady=5, ipadx=5)
+        self.btResetSetup.grid(row=5, column=3, padx=5, pady=5, ipadx=5, sticky=W+E)
 
         self.btStoreSetup = Button(root, text="Store Setup", command=self.cbStoreSetup)
-        self.btStoreSetup.grid(row=6, column=6, padx=5, pady=5, ipadx=5)
+        self.btStoreSetup.grid(row=6, column=3, padx=5, pady=5, ipadx=5, sticky=W+E)
 
         self.varStatus = StringVar()
         self.lbStatus = Label(root, textvariable=self.varStatus, anchor=W, relief=RIDGE)
-        self.lbStatus.grid(row=7, column=0, columnspan=7, padx=0, pady=0, sticky=W+E)
+        self.lbStatus.grid(row=7, column=0, columnspan=4, padx=0, pady=0, sticky=W+E)
         
 
     def cbSheetSelected(self, event):
