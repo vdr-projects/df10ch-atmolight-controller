@@ -36,6 +36,7 @@ df10ch_usb_proto.h    Include file with definitions of implemented USB communica
 df10ch_setup.py       Main python script of DF10CH setup program
 setup.py              Python script used for installation of Df10CH setup program
 MANIFEST.in           File used by Python installation script
+windows/              MS Windows related files
 
 
 
@@ -85,6 +86,33 @@ If you like you could directly flash the application firmware without the bootlo
 lose the firmware update feature of the DF10CH setup program.
 
 
+------------------------------------------------
+Installation of USB driver for DF10CH controller
+------------------------------------------------
+
+The DF10CH setup programm and test application uses the USB library "libusb" for communication to the controllers.
+Currently there exits two different version of this libary called "libusb 0.1" and libusb 1.0".
+
+For Linux you must install the newer implementation "libusb 1.0".
+On debian based systems this is packages: libusb-1.0-0.
+
+For MS Windows you need to install the "libusb-win32 device driver" which is a port of "libusb 0.1":
+
+    * Log in as a user with administrator privileges.
+    * Download the latest device driver binary package (libusb-win32-device-bin-x.x.x.x.zip or tar.gz) from http://sourceforge.net/projects/libusb-win32/files/
+    * Extract it to a temporary directory.
+    * Copy the DF10CH.inf and DF10CH.cat files from the windows/ subdirectory to the temporary directory
+    * Unplug the device(s) from the system.
+    * Open the Windows Device Manager and remove all incorrectly installed USB devices (device entries with a yellow exclamation mark).
+    * Reconnect the device(s) to the system.
+    * When Windows asks for a driver, choose the inf-file(s) copyed above. On Win2k, WinXP, Windows will warn that the driver is is not 'digitally signed'.
+      Ignore this message and continue with the installation. It is similar for Windows Vista and Windows 7 32bit systems.
+      For 64bit Vista and Windows 7 systems, a valid digital signature is required. Please read more about the Microsoft Kernel Mode Code Signing (KMCS) policy for more information.
+    * Open the Windows Device Manager to verify that the device is installed correctly. Run the test program (testlibusb-win.exe) from the 'bin directory'.
+      It should print out the descriptors of your device(s).
+    * A reboot isn't necessary. 
+
+
 ------------------------------------
 Installation of DF10Ch setup program
 ------------------------------------
@@ -125,8 +153,10 @@ To get maximum load at controller you should have a setup so that each controlle
 drives a different area. This is the initial setup of a controller if you do not have
 already changed the channel mapping with the setup program.
 
-For compiling the application you need a installed libusb library.
+For compiling the application you need a installed libusb 1.0 library.
 On debian based systems this is packages: libusb-1.0-0.
+Currently this application is not tested against MS-Windows because there is no existing
+port of libusb 1.0 for this platform!!
 
 cd test_appl
 make

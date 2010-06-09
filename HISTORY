@@ -1,6 +1,9 @@
 History of changes from newest to oldest:
 -----------------------------------------
 
+Added sub directory "windows/" with files for libusb driver installation on MS-Windows.
+Added description about libusb driver installation on MS-Windows in file README.
+
 circuit revision 4
 	Changed R9 from 2K2 to 1K5
 
