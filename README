@@ -24,10 +24,10 @@ README                The file you are currently reading
 HISTORY               History of changes
 Makfile               Makefile for generating everything
 df10ch_setup_pkg/     Python modules needed by the DF10CH setup program
-pwm_appl/             Application firmware for PWM-Prozessor
-pwm_boot/             Bootloader firmware for PWM-Prozessor
-usb_appl/             Application firmware for USB-Prozessor
-usb_boot/             Bootloader firmware for USB-Prozessor
+pwm_appl/             Application firmware for PWM-Processor
+pwm_boot/             Bootloader firmware for PWM-Processor
+usb_appl/             Application firmware for USB-Processor
+usb_boot/             Bootloader firmware for USB-Processor
 usbdrv/               Objective Development's firmware-only USB driver V-USB for Atmel AVR microcontrollers
 test_appl/            Controller test application
 kicad/                KiCad files of hardware design: circuit and board layout
@@ -37,6 +37,7 @@ df10ch_setup.py       Main python script of DF10CH setup program
 setup.py              Python script used for installation of Df10CH setup program
 MANIFEST.in           File used by Python installation script
 windows/              MS Windows related files
+linux/                Linux related files
 
 
 
@@ -78,8 +79,8 @@ Options to avrdude can be specified with:
 	make prog AVRDUDE="avrdude -c stk500v2 -P avrdoper"
 	
 
-Normally only the bootloaders are flash into the processors. For this you need a dedicated AVR programmer.
-The application firmware could later be flash via the DF10CH setup program.
+Normally only the bootloaders are flashed into the processors. For this you need a dedicated AVR programmer.
+The application firmware could later be flashed via the DF10CH setup program.
 This has the advantage that updates of the application firmware could be easily done over the USB
 interface without the need for a dedicated AVR programmer.
 If you like you could directly flash the application firmware without the bootloaders. But you will
@@ -90,8 +91,8 @@ lose the firmware update feature of the DF10CH setup program.
 Installation of USB driver for DF10CH controller
 ------------------------------------------------
 
-The DF10CH setup programm and test application uses the USB library "libusb" for communication to the controllers.
-Currently there exits two different version of this libary called "libusb 0.1" and libusb 1.0".
+The DF10CH setup program and test application uses the USB library "libusb" for communication to the controllers.
+Currently there exists two different version of this library called "libusb 0.1" and libusb 1.0".
 
 For Linux you must install the newer implementation "libusb 1.0".
 On debian based systems this is packages: libusb-1.0-0.
@@ -114,7 +115,7 @@ For MS Windows you need to install the "libusb-win32 device driver" which is a p
 
 
 ------------------------------------
-Installation of DF10Ch setup program
+Installation of DF10CH setup program
 ------------------------------------
 
 For running the DF10CH setup program you need a installed python environment version 2.6,
@@ -125,7 +126,7 @@ python-usb, libusb-1.0-0
 You can start the program directly from the distribution directory with:
 
 	python df10ch_setup.py
-	
+
 You can also install the program to the default python installation location with:
 
 	python setup.py install
@@ -134,7 +135,11 @@ Now df10ch_setup.py should be simply in your standard PATH for execution. Start 
 
 	df10ch_setup.py
 
-
+If the setup program does not find any controller(s) under linux the problem may be missing access rights to the
+usb device. Either execute the program with 'root' privileges and/or install the udev rule file
+'linux/45-df10ch.rules' after customizing it for your needs to /etc/udev/rules.d to change the privileges
+settings for the USB device.
+ 
 The setup program understands the following command line option:
 
 	-d N		Set debug level to N

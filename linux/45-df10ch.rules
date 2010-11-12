@@ -1,0 +1,6 @@
+# udev rules file for DF10CH Atmolight controller
+# You should customize MODE and GROUP for your specific environment!
+# Copy to /etc/udev/rules.d
+#
+ACTION=="add", SUBSYSTEM=="usb*", ATTR{idVendor}=="16c0", ATTR{idProduct}=="05dc", MODE="0666"
+#ACTION=="add", SUBSYSTEM=="usb*", ATTR{idVendor}=="16c0", ATTR{idProduct}=="05dc", MODE="0660", GROUP="vdr"
