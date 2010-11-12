@@ -56,6 +56,10 @@ HEX_FLASH_FLAGS = -R .eeprom -R .fuse -R .lock -R .signature
 HEX_EEPROM_FLAGS = -j .eeprom
 HEX_EEPROM_FLAGS += --set-section-flags=.eeprom="alloc,load"
 
+## AVR size flags
+#AVR_SIZE_FLAGS ?= -C --mcu=${MCU}
+AVR_SIZE_FLAGS ?= --format=sysv
+
 ## Include Directories
 INCLUDES = -I. -I.. -I$(USBDRV) 
 
@@ -101,7 +105,7 @@ $(TARGET): $(OBJECTS)
 
 size: ${TARGET}
 	@echo
-	@avr-size -C --mcu=${MCU} ${TARGET}
+	@avr-size ${AVR_SIZE_FLAGS} ${TARGET}
 
 ## Clean target
 .PHONY: clean
