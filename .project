@@ -36,7 +36,7 @@
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.buildLocation</key>
-					<value>${workspace_loc:/df10ch/pwm_appl}</value>
+					<value>${workspace_loc:/df10ch/usb_boot}</value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.cleanBuildTarget</key>
@@ -68,7 +68,7 @@
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.useDefaultBuildCmd</key>
-					<value>true</value>
+					<value>false</value>
 				</dictionary>
 			</arguments>
 		</buildCommand>

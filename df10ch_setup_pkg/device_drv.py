@@ -21,10 +21,10 @@
 #
 
 import os
-import usb
 import time
 import pickle
 import string
+import array
 
 # ---
 # Communication protocol related defines for 10 channel RGB Controller.
@@ -287,13 +287,21 @@ def AreaCode(area, color):
     return ((areaIdx << 2) + (color & 0x03)), areaNum
 
 
-class AtmoControllerError(Exception):
-        def __init__(self, dev, msg):
-            self.id = dev.id
-            self.message = msg
+class DeviceError(Exception):
+    def __init__(self, msg):
+        self.message = msg
 
-        def __str__(self):
-            return '{0}: {1}'.format(self.id, self.message)
+    def __str__(self):
+        return self.message
+
+
+class AtmoControllerError(Exception):
+    def __init__(self, dev, msg):
+        self.id = dev.id
+        self.message = msg
+
+    def __str__(self):
+        return '{0}: {1}'.format(self.id, self.message)
 
 
     
@@ -312,20 +320,34 @@ class DF10CHController:
         self.error_count = 0
         
     def release(self):
-        self.usbdev.releaseInterface()
+        self.usbdev.releaseInterface(0)
+        self.usbdev.close()
 
     def bootloader_mode(self):
         return self.serial == "BL"
     
     def ctrl_write(self, req, value, index, data, timeout = DEF_USB_TIMEOUT, retry = DEF_RETRY):
+        if isinstance(data, basestring):
+            sdata = data
+        else:
+            if isinstance(data, bytearray):
+                bdata = data
+            else:
+                l = len(data)
+                bdata = bytearray(l)
+                while l:
+                    l = l - 1
+                    bdata[l] = data[l]
+            sdata = str(bdata)
+            
         while retry > 0:
             try:
                 retry = retry - 1
-                written = self.usbdev.controlMsg(usb.ENDPOINT_OUT|usb.RECIP_DEVICE|usb.TYPE_VENDOR, req, data, value, index, timeout)
-            except usb.USBError as err:
+                written = self.usbdev.controlWrite(libusb1.LIBUSB_RECIPIENT_DEVICE|libusb1.LIBUSB_TYPE_VENDOR, req, value, index, sdata, timeout)
+            except libusb1.USBError as err:
                 self.error_count = self.error_count + 1
                 print 'write req={0}, retry={1}: {2}'.format(req, retry, err.__str__())
-                if retry == 0:
+                if retry == 0 or err.value != libusb1.LIBUSB_ERROR_PIPE:
                     raise AtmoControllerError(self, 'write req={0}: {1}'.format(req, err.__str__()))
             else:
                 if written != len(data):
@@ -334,13 +356,17 @@ class DF10CHController:
                 break
 
     def ctrl_read(self, req,  value = 0, index = 0, size = 0, timeout = DEF_USB_TIMEOUT, retry = DEF_RETRY):
+        if size > 0:
+            n = size
+        else:
+            n = 1
         while retry > 0:
             try:
                 retry = retry - 1
-                data = self.usbdev.controlMsg(usb.ENDPOINT_IN|usb.RECIP_DEVICE|usb.TYPE_VENDOR, req, size, value, index, timeout)
-            except usb.USBError as err:
+                data = self.usbdev.controlRead(libusb1.LIBUSB_RECIPIENT_DEVICE|libusb1.LIBUSB_TYPE_VENDOR, req, value, index, n, timeout)
+            except libusb1.USBError as err:
                 print 'read req={0}, retry={1}: {2}'.format(req, retry, err.__str__())
-                if retry == 0:
+                if retry == 0 or err.value != libusb1.LIBUSB_ERROR_PIPE:
                     self.error_count = self.error_count + 1
                     raise AtmoControllerError(self, 'read req={0}: {1}'.format(req, err.__str__()))
             else:
@@ -348,7 +374,7 @@ class DF10CHController:
                     self.error_count = self.error_count + 1
                     raise AtmoControllerError(self, 'read req={0}: could not read all payload data'.format(req))
                 break
-        return data
+        return bytearray(data)
 
     def pwm_ctrl_write(self, req, value, index, data, timeout = DEF_USB_TIMEOUT, retry = DEF_RETRY):
         if len(data) > MAX_PWM_REQ_PAYLOAD_SIZE:
@@ -413,22 +439,24 @@ class DF10CHController:
         return data[0]
     
     def set_brightness(self, start, values):
-        data = list();
-        for i in range(len(values)):
-            data.append(values[i] & 0x00FF)
-            data.append(values[i] / 256)
+        l = len(values)
+        data = bytearray(l*2)
+        for i in range(l):
+            data[i*2] = values[i] & 0x00FF
+            data[i*2+1] = values[i] / 256
         self.pwm_ctrl_write(PWM_REQ_SET_BRIGHTNESS, 0, start, data)
     
     def set_brightness_synced(self, start, values):
-        data = list();
-        for i in range(len(values)):
-            data.append(values[i] & 0x00FF)
-            data.append(values[i] / 256)
+        l = len(values)
+        data = bytearray(l*2)
+        for i in range(l):
+            data[i*2] = values[i] & 0x00FF
+            data[i*2+1] = values[i] / 256
         self.pwm_ctrl_write(PWM_REQ_SET_BRIGHTNESS_SYNCED, 0, start, data)
     
     def get_brightness(self, start, nch):
         data = self.pwm_ctrl_read(PWM_REQ_GET_BRIGHTNESS, 0, start, nch * 2)
-        values = list()
+        values = array.array('H')
         for i in range(nch):
             values.append(data[i*2] + data[i*2+1] * 256)
         return values;
@@ -441,7 +469,7 @@ class DF10CHController:
         return map;
                     
     def set_channel_map(self, start, map):
-        data = list()
+        data = bytearray()
         for mapRec in map:
             data.append(CM_CODE(mapRec['port'], mapRec['channel']))
             data.append(mapRec['pins'])
@@ -727,7 +755,7 @@ class ControllerConfig:
                 self.edgeWeighting = max(min(eedata[p + 2], MAX_EDGE_WEIGHTING), MIN_EDGE_WEIGHTING)
         else:
             configVersionStr = ""
-        self.version = "USB:{0} PWM:{1:04X} CONFIG:{2}".format(self.ctrl.version, self.ctrl.get_pwm_version(), configVersionStr)
+        self.version = "USB:{0:04X} PWM:{1:04X} CONFIG:{2}".format(self.ctrl.version, self.ctrl.get_pwm_version(), configVersionStr)
         pwmChannelMap = self.ctrl.get_channel_map(0, NCHANNELS)
         #print "read pwmChannelMap", pwmChannelMap
         self.channelMap = dict()
@@ -760,7 +788,7 @@ class ControllerConfig:
                 
     def write(self):
         #print "write channelMap:", self.channelMap
-        eedata = list()
+        eedata = bytearray()
         eedata.append(CONFIG_VALID_ID & 0x00FF)
         eedata.append(CONFIG_VALID_ID >> 8)
         eedata.append(CONFIG_VERSION & 0x00FF)
@@ -829,50 +857,49 @@ class ControllerConfig:
             self.pwmFreq = v
 
 
+UsbContext = None
 DeviceList = list()
                        
 def FindDevices():
-    global DeviceList
+    global DeviceList, UsbContext, libusb1, usb1
 
+    if UsbContext == None and SimulatedControllers == 0:
+        try:
+            import libusb1
+            import usb1
+            UsbContext = usb1.LibUSBContext()
+        except Exception as err:
+            raise DeviceError(str(err))
+        
     ReleaseDevices()
 
-    if SimulatedControllers:
+    if SimulatedControllers > 0:
         DeviceList = loadDummyDevices()
         return
 
-    busses = usb.busses()
-    busnum = 0
-    for bus in busses:
-        devnum = 0
-        for dev in bus.devices:
-            if dev.idProduct == PRODUCT_ID and dev.idVendor == VENDOR_ID:
-                try:
-                    handle = dev.open()
-                    if handle.getString(dev.iManufacturer, 64) == VENDOR_NAME and handle.getString(dev.iProduct, 64) == DEVICE_NAME:
-                        handle.setConfiguration(1)
-                        handle.claimInterface(0)
-                        serial = handle.getString(dev.iSerialNumber, 64)
-                        if os.name == "nt":
-                            bn = bus.location
-                            dn = dev.devnum
-                        else:
-                            bn = busnum
-                            dn = devnum
-                        ctrl = DF10CHController(handle, bn, dn, dev.deviceVersion, serial)
-                        DeviceList.append(ctrl)
-                except usb.USBError:
-                    pass
-            devnum = devnum + 1
-        busnum = busnum + 1
+    for dev in UsbContext.getDeviceList():
+        try:
+            if dev.getVendorID() == VENDOR_ID and dev.getProductID() == PRODUCT_ID and dev.getManufacturer() == VENDOR_NAME and dev.getProduct() == DEVICE_NAME:
+                serial = dev.getSerialNumber()
+                handle = dev.open()
+                handle.setConfiguration(1)
+                handle.claimInterface(0)
+                ctrl = DF10CHController(handle, dev.getBusNumber(), dev.getDeviceAddress(), dev.getbcdDevice(), serial)
+                DeviceList.append(ctrl)
+        except libusb1.USBError:
+            pass
 
                     
 def ReleaseDevices():
     global DeviceList
     for dev in DeviceList:
-        try:
+        if SimulatedControllers > 0:
             dev.release()
-        except usb.USBError:
-            pass
+        else:
+            try:
+                dev.release()
+            except libusb1.USBError:
+                pass
     DeviceList = list()
 
 

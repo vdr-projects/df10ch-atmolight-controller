@@ -23,11 +23,20 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include <sys/time.h>
 #include <libusb.h>
+
+#ifdef WIN32
+#include <windows.h>
+#define snprintf _snprintf
+#else
+#include <unistd.h>
+#include <sys/time.h>
+#ifndef LIBUSB_CALL
+#define LIBUSB_CALL
+#endif
+#endif
 
 #include "../df10ch_usb_proto.h"
 
@@ -63,8 +72,8 @@ struct df10ch_output_driver_s {
   int transfer_err_cnt;             // Number of transfer errors
 };
 
-
-static const char *df10ch_usb_errmsg(int rc) {
+#ifndef WIN32
+static const char *libusb_strerror(int rc) {
   switch (rc) {
   case LIBUSB_SUCCESS:
     return ("Success (no error)");
@@ -97,7 +106,7 @@ static const char *df10ch_usb_errmsg(int rc) {
   }
   return ("?");
 }
-
+#endif
 
 static const char * df10ch_usb_transfer_errmsg(int s) {
   switch (s) {
@@ -146,10 +155,12 @@ static void df10ch_comm_errmsg(int stat, char *rc) {
 
 static int df10ch_control_in_transfer(df10ch_ctrl_t *ctrl, uint8_t req, uint16_t val, uint16_t index, unsigned int timeout, uint8_t *buf, uint16_t buflen)
 {
-      // Use a return buffer always so that the controller is able to send a USB reply status
-      // This is special for VUSB at controller side
+    int n = 0, retrys = 0;
     unsigned char rcbuf[1];
     int len = buflen;
+
+      // Use a return buffer always so that the controller is able to send a USB reply status
+      // This is special for VUSB at controller side
     if (!len)
     {
         buf = rcbuf;
@@ -157,7 +168,6 @@ static int df10ch_control_in_transfer(df10ch_ctrl_t *ctrl, uint8_t req, uint16_t
     }
 
       // Because VUSB at controller sends ACK reply before CRC check of received data we have to retry sending request our self if data is corrupted
-    int n = 0, retrys = 0;
     while (retrys < 3)
     {
         n = libusb_control_transfer(ctrl->dev, LIBUSB_ENDPOINT_IN | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_RECIPIENT_DEVICE, req, val, index, buf, len, timeout);
@@ -174,7 +184,7 @@ static int df10ch_control_in_transfer(df10ch_ctrl_t *ctrl, uint8_t req, uint16_t
 
     if (n < 0)
     {
-        printf( "%s: sending USB control transfer message %d failed: %s\n", ctrl->id, req, df10ch_usb_errmsg(n));
+        printf( "%s: sending USB control transfer message %d failed: %s\n", ctrl->id, req, libusb_strerror(n));
         return -1;
     }
 
@@ -191,11 +201,13 @@ static int df10ch_control_in_transfer(df10ch_ctrl_t *ctrl, uint8_t req, uint16_t
 static void df10ch_dispose(df10ch_output_driver_t *this) {
   df10ch_ctrl_t *ctrl = this->ctrls;
   while (ctrl) {
+    df10ch_ctrl_t *next;
+
     libusb_free_transfer(ctrl->transfer);
     libusb_release_interface(ctrl->dev, 0);
     libusb_close(ctrl->dev);
 
-    df10ch_ctrl_t *next = ctrl->next;
+    next = ctrl->next;
     free(ctrl->transfer_data);
     free(ctrl);
     ctrl = next;
@@ -231,16 +243,16 @@ static void df10ch_read_status(df10ch_output_driver_t *this, int always) {
 
 
 static void df10ch_wait_for_replys(df10ch_output_driver_t *this) {
+  df10ch_ctrl_t *ctrl = this->ctrls;
     // wait for end of all pending transfers
   struct timeval timeout;
   timeout.tv_sec = 0;
   timeout.tv_usec = (DF10CH_USB_DEFAULT_TIMEOUT + 50) * 1000;
-  df10ch_ctrl_t *ctrl = this->ctrls;
   while (ctrl) {
     if (ctrl->pending_submit) {
       int rc = libusb_handle_events_timeout(this->ctx, &timeout);
       if (rc && rc != LIBUSB_ERROR_INTERRUPTED) {
-        printf( "handling USB events failed: %s\n", df10ch_usb_errmsg(rc));
+        printf( "handling USB events failed: %s\n", libusb_strerror(rc));
         break;
       }
     }
@@ -251,7 +263,7 @@ static void df10ch_wait_for_replys(df10ch_output_driver_t *this) {
 }
 
 
-static void df10ch_reply_cb(struct libusb_transfer *transfer) {
+static void LIBUSB_CALL df10ch_reply_cb(struct libusb_transfer *transfer) {
   df10ch_ctrl_t *ctrl = (df10ch_ctrl_t *) transfer->user_data;
   ctrl->pending_submit = 0;
   if (transfer->status != LIBUSB_TRANSFER_COMPLETED && transfer->status != LIBUSB_TRANSFER_CANCELLED) {
@@ -263,6 +275,11 @@ static void df10ch_reply_cb(struct libusb_transfer *transfer) {
 
 
 static int df10ch_driver_open(df10ch_output_driver_t *this) {
+  libusb_device **list = NULL;
+  df10ch_ctrl_t *ctrl;
+  size_t cnt;
+  int rc;
+  size_t i;
 
   this->max_transmit_latency = 0;
   this->avg_transmit_latency = 0;
@@ -273,18 +290,15 @@ static int df10ch_driver_open(df10ch_output_driver_t *this) {
     return -1;
   }
 
-  libusb_device **list = NULL;
-  size_t cnt = libusb_get_device_list(this->ctx, &list);
+  cnt = libusb_get_device_list(this->ctx, &list);
   if (cnt < 0) {
-    printf("getting list of USB devices failed: %s\n", df10ch_usb_errmsg(cnt));
+    printf("getting list of USB devices failed: %s\n", libusb_strerror(cnt));
     df10ch_dispose(this);
     return -1;
   }
 
     // Note: Because controller uses obdev's free USB product/vendor ID's we have to do special lookup for finding
     // the controllers. See file "USB-IDs-for-free.txt" of VUSB distribution.
-  int rc;
-  size_t i;
   for (i = 0; i < cnt; i++) {
     libusb_device *d = list[i];
     struct libusb_device_descriptor desc;
@@ -294,31 +308,31 @@ static int df10ch_driver_open(df10ch_output_driver_t *this) {
 
     rc = libusb_get_device_descriptor(d, &desc);
     if (rc < 0)
-      printf( "USB[%d,%d]: getting USB device descriptor failed: %s\n", busnum, devnum, df10ch_usb_errmsg(rc));
+      printf( "USB[%d,%d]: getting USB device descriptor failed: %s\n", busnum, devnum, libusb_strerror(rc));
     else if (desc.idVendor == DF10CH_USB_CFG_VENDOR_ID && desc.idProduct == DF10CH_USB_CFG_PRODUCT_ID) {
       libusb_device_handle *hdl = NULL;
       rc = libusb_open(d, &hdl);
       if (rc < 0)
-        printf( "USB[%d,%d]: open of USB device failed: %s\n", busnum, devnum, df10ch_usb_errmsg(rc));
+        printf( "USB[%d,%d]: open of USB device failed: %s\n", busnum, devnum, libusb_strerror(rc));
       else {
         unsigned char buf[256];
         rc = libusb_get_string_descriptor_ascii(hdl, desc.iManufacturer, buf, sizeof(buf));
         if (rc < 0)
-          printf( "USB[%d,%d]: getting USB manufacturer string failed: %s\n", busnum, devnum, df10ch_usb_errmsg(rc));
+          printf( "USB[%d,%d]: getting USB manufacturer string failed: %s\n", busnum, devnum, libusb_strerror(rc));
         else if (rc == sizeof(DF10CH_USB_CFG_VENDOR_NAME) - 1 && !memcmp(buf, DF10CH_USB_CFG_VENDOR_NAME, rc)) {
           rc = libusb_get_string_descriptor_ascii(hdl, desc.iProduct, buf, sizeof(buf));
           if (rc < 0)
-            printf( "USB[%d,%d]: getting USB product string failed: %s\n", busnum, devnum, df10ch_usb_errmsg(rc));
+            printf( "USB[%d,%d]: getting USB product string failed: %s\n", busnum, devnum, libusb_strerror(rc));
           else if (rc == sizeof(DF10CH_USB_CFG_PRODUCT) - 1 && !memcmp(buf, DF10CH_USB_CFG_PRODUCT, rc)) {
             char id[32];
             snprintf(id, sizeof(id), "DF10CH[%d,%d]", busnum, devnum);
             rc = libusb_set_configuration(hdl, 1);
             if (rc < 0)
-              printf( "%s: setting USB configuration failed: %s\n", id, df10ch_usb_errmsg(rc));
+              printf( "%s: setting USB configuration failed: %s\n", id, libusb_strerror(rc));
             else {
               rc = libusb_claim_interface(hdl, 0);
               if (rc < 0)
-                printf( "%s: claiming USB interface failed: %s\n", id, df10ch_usb_errmsg(rc));
+                printf( "%s: claiming USB interface failed: %s\n", id, libusb_strerror(rc));
               else {
                 df10ch_ctrl_t *ctrl = (df10ch_ctrl_t *) calloc(1, sizeof(df10ch_ctrl_t));
                 ctrl->next = this->ctrls;
@@ -347,7 +361,7 @@ static int df10ch_driver_open(df10ch_output_driver_t *this) {
   }
 
     // Read controller configuration
-  df10ch_ctrl_t *ctrl = this->ctrls;
+  ctrl = this->ctrls;
   while (ctrl) {
     uint8_t data[256];
 
@@ -398,22 +412,30 @@ static int df10ch_driver_close(df10ch_output_driver_t *this) {
 
 
 static void df10ch_driver_output_colors(df10ch_output_driver_t *this, uint8_t *data, int len) {
-  struct timeval tvnow, tvlast, tvdiff;
+  df10ch_ctrl_t *ctrl = this->ctrls;
+  int latency;
 
-  gettimeofday(&tvlast, NULL);
+#ifdef WIN32
+	FILETIME act_time, start_time;
+	GetSystemTimeAsFileTime (&start_time);
+#else
+	struct timeval act_time, start_time, latency_time;
+	gettimeofday(&start_time, NULL);
+#endif
 
     // Generate transfer messages and send it to controllers
-  df10ch_ctrl_t *ctrl = this->ctrls;
   while (ctrl) {
+    int rc;
+
       // Generate payload data (brightness values)
     uint8_t *payload = ctrl->transfer_data + LIBUSB_CONTROL_SETUP_SIZE;
     memcpy(payload, data, len);
 
       // initiate asynchron data transfer to controller
     ctrl->transfer_error = 0;
-    int rc = libusb_submit_transfer(ctrl->transfer);
+    rc = libusb_submit_transfer(ctrl->transfer);
     if (rc)
-      printf( "%s: submitting USB control transfer message failed: %s\n", ctrl->id, df10ch_usb_errmsg(rc));
+      printf( "%s: submitting USB control transfer message failed: %s\n", ctrl->id, libusb_strerror(rc));
     else
       ctrl->pending_submit = 1;
 
@@ -423,11 +445,18 @@ static void df10ch_driver_output_colors(df10ch_output_driver_t *this, uint8_t *d
     // wait for end of all pending transfers
   df10ch_wait_for_replys(this);
 
-  gettimeofday(&tvnow, NULL);
-  timersub(&tvnow, &tvlast, &tvdiff);
-  this->avg_transmit_latency = (this->avg_transmit_latency + tvdiff.tv_usec) / 2;
-  if (tvdiff.tv_usec > this->max_transmit_latency) {
-    this->max_transmit_latency = tvdiff.tv_usec;
+#ifdef WIN32
+  GetSystemTimeAsFileTime (&act_time);
+  latency = (act_time.dwLowDateTime - start_time.dwLowDateTime) / 10;
+#else
+  gettimeofday(&act_time, NULL);
+  timersub(&act_time, &start_time, &latency_time);
+  latency = latency_time.tv_usec;
+#endif
+
+  this->avg_transmit_latency = (this->avg_transmit_latency + latency) / 2;
+  if (latency > this->max_transmit_latency) {
+    this->max_transmit_latency = latency;
     printf( "max/avg transmit latency: %d/%d [us]\n", this->max_transmit_latency, this->avg_transmit_latency);
   }
 }
@@ -438,7 +467,7 @@ static uint16_t bright[DF10CH_MAX_CHANNELS];
 int main(int argc, char **argv) {
   int n, i, b;
 
-  printf("DF10CH test application V1\n");
+  printf("DF10CH test application V2\n");
   if (argc != 2) {
   	printf("usage: %s number-of-test-loops\n", argv[0]);
   	return 1;

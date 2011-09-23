@@ -20,7 +20,6 @@
 # This file is part of the DF10CH setup program
 #
 
-import array
 import fileinput
 import string
 
@@ -37,7 +36,7 @@ class FlashPage:
     def __init__(self, addr, pageSize):
         self.pageSize = pageSize
         self.baseAddr = addr - addr % pageSize
-        self.data = array.array('B', [ 0xFF ] * pageSize)
+        self.data = bytearray([ 0xFF ] * pageSize)
 
     def insert(self, addr, value):
         self.data[addr % self.pageSize] = value

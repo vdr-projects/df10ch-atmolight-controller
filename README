@@ -1,6 +1,6 @@
 This is the README file to the DF10CH Atmolight Controller Project.
 
-Written by: Andreas Auras (yak54@gmx.net)
+Written by: Andreas Auras (yak54@inkennet.de)
 
 See the file COPYING for license information.
 
@@ -35,10 +35,11 @@ df10ch_common.h       Common include file used by firmware
 df10ch_usb_proto.h    Include file with definitions of implemented USB communication protocol
 df10ch_setup.py       Main python script of DF10CH setup program
 setup.py              Python script used for installation of Df10CH setup program
+winsetup.py           Python script used for building the Df10CH binary distribution for Windows 
 MANIFEST.in           File used by Python installation script
 windows/              MS Windows related files
 linux/                Linux related files
-
+project/              Visual C++ 2010 project files for building the df10ch_test program for windows
 
 
 ----------------------
@@ -91,37 +92,34 @@ lose the firmware update feature of the DF10CH setup program.
 Installation of USB driver for DF10CH controller
 ------------------------------------------------
 
-The DF10CH setup program and test application uses the USB library "libusb" for communication to the controllers.
-Currently there exists two different version of this library called "libusb 0.1" and libusb 1.0".
+The DF10CH setup program and test application uses the USB library "libusb 1.0" for communication to the controllers.
 
-For Linux you must install the newer implementation "libusb 1.0".
 On debian based systems this is packages: libusb-1.0-0.
 
-For MS Windows you need to install the "libusb-win32 device driver" which is a port of "libusb 0.1":
+For MS Windows you need to install the "WinUSB" device driver which can be installed with a nice dedicated setup 
+program called 'zadig' that could be downloaded from here:
 
-    * Log in as a user with administrator privileges.
-    * Download the latest device driver binary package (libusb-win32-device-bin-x.x.x.x.zip or tar.gz) from http://sourceforge.net/projects/libusb-win32/files/
-    * Extract it to a temporary directory.
-    * Copy the DF10CH.inf and DF10CH.cat files from the windows/ subdirectory to the temporary directory
-    * Unplug the device(s) from the system.
-    * Open the Windows Device Manager and remove all incorrectly installed USB devices (device entries with a yellow exclamation mark).
-    * Reconnect the device(s) to the system.
-    * When Windows asks for a driver, choose the inf-file(s) copyed above. On Win2k, WinXP, Windows will warn that the driver is is not 'digitally signed'.
-      Ignore this message and continue with the installation. It is similar for Windows Vista and Windows 7 32bit systems.
-      For 64bit Vista and Windows 7 systems, a valid digital signature is required. Please read more about the Microsoft Kernel Mode Code Signing (KMCS) policy for more information.
-    * Open the Windows Device Manager to verify that the device is installed correctly. Run the test program (testlibusb-win.exe) from the 'bin directory'.
-      It should print out the descriptors of your device(s).
-    * A reboot isn't necessary. 
-
+	http://sourceforge.net/apps/mediawiki/libwdi/index.php?title=Main_Page
+ 
+ Attach your controller to your windows box and follow the usage instructions for 'zadig' that could be found here:
+ 
+ 	http://sourceforge.net/apps/mediawiki/libwdi/index.php?title=Zadig
+ 
+The program should show the DF10CH controller in the device selection box.
+Select the device and install the 'WinUSB' driver for it. 
+ 
+In case there is already a (older) driver installed for the controller the device will not be shown. Select 
+"Options/List all Devices", select the DF10CH device and reinstall the 'WinUSB' driver.  
+ 	  
 
 ------------------------------------
 Installation of DF10CH setup program
 ------------------------------------
 
-For running the DF10CH setup program you need a installed python environment version 2.6,
-the python modules TKinter, Image, ImageTk, ImageDraw and PyUSB and a installed libusb library.
+For running the DF10CH setup program under Linux you need a installed python environment version 2.6,
+the python modules TKinter, Image, ImageTk, ImageDraw and a installed 'libusb 1.0' library.
 On debian based systems these are packages: python2.6, python-tk, python-imaging, python-imaging-tk,
-python-usb, libusb-1.0-0
+libusb-1.0-0
 
 You can start the program directly from the distribution directory with:
 
@@ -135,17 +133,25 @@ Now df10ch_setup.py should be simply in your standard PATH for execution. Start 
 
 	df10ch_setup.py
 
-If the setup program does not find any controller(s) under linux the problem may be missing access rights to the
+If the setup program does not find any controller(s) under Linux the problem may be missing access rights to the
 usb device. Either execute the program with 'root' privileges and/or install the udev rule file
 'linux/45-df10ch.rules' after customizing it for your needs to /etc/udev/rules.d to change the privileges
 settings for the USB device.
- 
+
+
+Windows users should use the ready compiled df10ch_setup program from the windows binary distribution.
+From within the binary distribution directory start the setup program with:
+
+	.\df10ch_setup.bat
+
+
 The setup program understands the following command line option:
 
 	-d N		Set debug level to N
 	-s N		Set number of simulated controllers. With this option you can play with
 	     		the program without having hardware.
 
+ 
 
 -----------------------------------------------------
 Compiling and running the controller test application
@@ -160,8 +166,6 @@ already changed the channel mapping with the setup program.
 
 For compiling the application you need a installed libusb 1.0 library.
 On debian based systems this is packages: libusb-1.0-0.
-Currently this application is not tested against MS-Windows because there is no existing
-port of libusb 1.0 for this platform!!
 
 cd test_appl
 make
@@ -170,6 +174,12 @@ Running the application:
 
 ./df10ch-test <number-of-test-loops> 
 e.g. ./df10ch-test 50
+
+
+Again windows users should use the ready compiled df10ch_test program from the windows binary distribution.
+From within the binary distribution directory start the test program with:
+
+	.\df10ch_test.exe <number-of-test-loops>
 
   			
 

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2010 Andreas Auras
+# Copyright (C) 2011 Andreas Auras
 #
 # This file is part of the DF10CH Atmolight controller project.
 #
@@ -22,11 +22,11 @@
 # ################################
 
 FIRMWARE_DIRS = usb_boot usb_appl pwm_boot pwm_appl
-.PHONY: all dist srcdist clean firmware $(FIRMWARE_DIRS)
+.PHONY: all dist srcdist windist clean firmware $(FIRMWARE_DIRS)
 
 all: firmware
 
-# Build binary distribution (setup program and *.dff firmware files)
+# Build binary distribution (linux) (setup program and *.dff firmware files)
 dist: clean firmware
 	mkdir -p dist
 	mkdir -p build/firmware
@@ -34,6 +34,10 @@ dist: clean firmware
 	cp usb_appl/df10ch_usb_appl.dff build/firmware/df10ch_usb_appl.dff
 	cp pwm_appl/df10ch_pwm_appl.dff build/firmware/df10ch_pwm_appl.dff
 	tar -C build -cvzf dist/df10ch_firmware.tar.gz firmware
+
+# Build binary distribution (windows)
+windist:
+	python winsetup.py py2exe
 
 # Build source distribution
 srcdist: clean

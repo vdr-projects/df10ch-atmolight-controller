@@ -24,7 +24,6 @@ from Tkinter import *
 import tkFont
 import tkMessageBox
 import tkFileDialog
-import usb
 import pickle
 import string
 import time
@@ -170,7 +169,7 @@ class DeviceDialog:
         while retry:
             try:
                 device_drv.LoadConfigs()
-            except (device_drv.AtmoControllerError, usb.USBError) as err:        
+            except (device_drv.AtmoControllerError, device_drv.DeviceError) as err:        
                 if not tkMessageBox.askretrycancel(self.root.winfo_toplevel().title(), "Scanning for controllers fails:" + err.__str__(), icon=tkMessageBox.ERROR):
                     if len(device_drv.DeviceList):
                         retry = False
@@ -206,9 +205,9 @@ class DeviceDialog:
                 self.loadDeviceValues()
         else:
             if dev.bootloader_mode():
-                s = "Bootloader USB:{0}".format(dev.version)
+                s = "Bootloader USB:{0:04X}".format(dev.version)
             else:
-                s = "USB:{0} Bootloader PWM:{1:04X}".format(dev.version, dev.get_pwm_version())
+                s = "USB:{0:04X} Bootloader PWM:{1:04X}".format(dev.version, dev.get_pwm_version())
             self.varVersion.set(s)
         self.lbDevices.selection_clear(0, END)
         self.lbDevices.selection_set(i)
@@ -351,7 +350,7 @@ class DeviceDialog:
             time.sleep(5.0)
             try:
                 device_drv.FindDevices()
-            except (device_drv.AtmoControllerError, usb.USBError) as err:
+            except (device_drv.AtmoControllerError, device_drv.DeviceError) as err:
                 tkMessageBox.showerror(self.root.winfo_toplevel().title(), err.__str__())
                 doFlash = False
 

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright (C) 2010 Andreas Auras
+# Copyright (C) 2011 Andreas Auras
 #
 # This file is part of the DF10CH Atmolight controller project.
 #
@@ -22,6 +22,8 @@
 #
 
 from distutils.core import setup
+import py2exe
+
 setup(name='df10ch_setup',
       version='4',
       description='DF10CH Setup program',
@@ -29,7 +31,20 @@ setup(name='df10ch_setup',
       author_email='yak54@inkennet.de',
       url='http://www.vdr-wiki.de/wiki/index.php/VDR_Wiki:DF10CH_Atmolight_Kontroller',
       requires=[ 'TKinter', 'Image', 'ImageTk', 'ImageDraw' ],
-      scripts=[ 'df10ch_setup.py' ],
+      console=[ 'df10ch_setup.py' ],
       packages = [ 'df10ch_setup_pkg' ],
-      )
+      data_files = [ ( '', [ 'project/df10ch_test/Release/df10ch_test.exe',
+                             '../libusb/Win32/Release/dll/libusb-1.0.dll',
+                             '../zadig.exe',
+                             'windows/df10ch_setup.bat',
+                             'HISTORY',
+                             'COPYING',
+                             'README' ] ),
+                     ( 'firmware', [ 'usb_appl/df10ch_usb_appl.dff',
+                                     'usb_appl/df10ch_usb_appl.hex',
+                                     'usb_boot/df10ch_usb_boot.hex',
+                                     'pwm_appl/df10ch_pwm_appl.dff',
+                                     'pwm_appl/df10ch_pwm_appl.hex',
+                                     'pwm_boot/df10ch_pwm_boot.hex' ] ) ],
+	  )
 

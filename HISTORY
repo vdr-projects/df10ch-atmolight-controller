@@ -1,6 +1,16 @@
 History of changes from newest to oldest:
 -----------------------------------------
 
+Setup program version 4:
+	Exchange pyusb with extracted modules from python-libusb1 project.
+	Add generating .exe file for win32 platform with py2exe.
+	
+Controller test application version 2:
+	Port application to win32 platform.
+
+Added win32 binary distribution generation. Everything you need on windows
+is in this package: df10ch_setup, df10ch_test, libusb-1.0, zadig and all firmware files.
+	
 Added sub directory "windows/" with files for libusb driver installation on MS-Windows.
 Added description about libusb driver installation on MS-Windows in file README.
 
