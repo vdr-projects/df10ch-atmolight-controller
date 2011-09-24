@@ -33,9 +33,10 @@
 #else
 #include <unistd.h>
 #include <sys/time.h>
+#endif
+
 #ifndef LIBUSB_CALL
 #define LIBUSB_CALL
-#endif
 #endif
 
 #include "../df10ch_usb_proto.h"
@@ -72,7 +73,7 @@ struct df10ch_output_driver_s {
   int transfer_err_cnt;             // Number of transfer errors
 };
 
-#ifndef WIN32
+#ifndef HAVE_LIBUSB_STRERROR
 static const char *libusb_strerror(int rc) {
   switch (rc) {
   case LIBUSB_SUCCESS:

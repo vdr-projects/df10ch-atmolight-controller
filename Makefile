@@ -31,7 +31,9 @@ dist: clean firmware
 	mkdir -p dist
 	mkdir -p build/firmware
 	python setup.py sdist
+	cp usb_boot/df10ch_usb_boot.hex build/firmware/df10ch_usb_boot.hex
 	cp usb_appl/df10ch_usb_appl.dff build/firmware/df10ch_usb_appl.dff
+	cp pwm_boot/df10ch_pwm_boot.hex build/firmware/df10ch_pwm_boot.hex
 	cp pwm_appl/df10ch_pwm_appl.dff build/firmware/df10ch_pwm_appl.dff
 	tar -C build -cvzf dist/df10ch_firmware.tar.gz firmware
 

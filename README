@@ -40,7 +40,9 @@ MANIFEST.in           File used by Python installation script
 windows/              MS Windows related files
 linux/                Linux related files
 project/              Visual C++ 2010 project files for building the df10ch_test program for windows
-
+dist/df10ch_firmware.tar.gz  Archive with recent build of firmware files
+dist/df10ch_setup-??.tar.gz  Recent build of setup program for linux platform
+dist/df10ch_win_dist.tar.gz	 Binary distribution for Windows
 
 ----------------------
 Building the hardware:
@@ -61,6 +63,9 @@ You can download KiCad from here: http://kicad.sourceforge.net
 Building the firmware:
 ----------------------
 
+Note: "dist/df10ch_firmware.tar.gz" contains already a recent version of the compiled
+firmware ready for programming.
+ 
 For building the firmware for the two Atmel AVR microcontrollers you need AVR-GCC installed.
 On debian based systems these are packages avr-gcc, binutils-avr, avr-libc, avrdude
 
@@ -92,6 +97,9 @@ lose the firmware update feature of the DF10CH setup program.
 Installation of USB driver for DF10CH controller
 ------------------------------------------------
 
+Note: "dist/df10ch_win_dist.tar.gz" contains the "zadig" executable and libusb-1.0
+for windows.
+
 The DF10CH setup program and test application uses the USB library "libusb 1.0" for communication to the controllers.
 
 On debian based systems this is packages: libusb-1.0-0.
@@ -115,6 +123,10 @@ In case there is already a (older) driver installed for the controller the devic
 ------------------------------------
 Installation of DF10CH setup program
 ------------------------------------
+
+Note: "dist/df10ch_setup-??.tar.gz" contains a recent compiled version of the setup program
+for Linux. "dist/df10ch_win_dist.tar.gz" contains are ready to execute version of the
+setup program for Windows.
 
 For running the DF10CH setup program under Linux you need a installed python environment version 2.6,
 the python modules TKinter, Image, ImageTk, ImageDraw and a installed 'libusb 1.0' library.
@@ -156,6 +168,9 @@ The setup program understands the following command line option:
 -----------------------------------------------------
 Compiling and running the controller test application
 -----------------------------------------------------
+
+Note: "dist/df10ch_win_dist.tar.gz" contains already the compiled controller test
+application for Windows.
 
 In sub directory test_appl there is a controller test application that could be executed
 at your host computer. It sends brightness values from min to max and max to min in one
