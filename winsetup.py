@@ -36,15 +36,6 @@ setup(name='df10ch_setup',
       data_files = [ ( '', [ 'project/df10ch_test/Release/df10ch_test.exe',
                              '../libusb/Win32/Release/dll/libusb-1.0.dll',
                              '../zadig.exe',
-                             'windows/df10ch_setup.bat',
-                             'HISTORY',
-                             'COPYING',
-                             'README' ] ),
-                     ( 'firmware', [ 'usb_appl/df10ch_usb_appl.dff',
-                                     'usb_appl/df10ch_usb_appl.hex',
-                                     'usb_boot/df10ch_usb_boot.hex',
-                                     'pwm_appl/df10ch_pwm_appl.dff',
-                                     'pwm_appl/df10ch_pwm_appl.hex',
-                                     'pwm_boot/df10ch_pwm_boot.hex' ] ) ],
+                             'windows/df10ch_setup.bat' ] ) ]
 	  )
 
