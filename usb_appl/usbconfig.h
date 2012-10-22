@@ -370,7 +370,7 @@ endm
 #define USB_INTR_ENABLE_BIT     INT1
 /* #define USB_INTR_PENDING        GIFR */
 #define USB_INTR_PENDING_BIT    INTF1
-#define USB_INTR_VECTOR         SIG_INTERRUPT1
+#define USB_INTR_VECTOR         INT1_vect
 
 
 /* This is a new macro that is executed and the beginning of the usb irq handler.

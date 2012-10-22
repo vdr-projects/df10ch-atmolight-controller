@@ -169,7 +169,7 @@ static uint16_t bright_vals[NCHANNELS];
 //
 typedef struct { uint8_t code, port_bits; } channel_map_t;
 
-static channel_map_t default_channel_map[NCHANNELS] PROGMEM = {
+static const channel_map_t default_channel_map[NCHANNELS] PROGMEM = {
 		// J3
 	{ CM_CODE(PA_IDX, 0), _BV(2) },
 	{ CM_CODE(PA_IDX, 1), _BV(1) },
