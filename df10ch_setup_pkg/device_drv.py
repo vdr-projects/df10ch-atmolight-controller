@@ -233,7 +233,7 @@ def GetCommErrMsg(stat):
 
 
 CONFIG_VALID_ID = 0xA0A1
-CONFIG_VERSION = 0x0002
+CONFIG_VERSION = 0x0003
 CONFIG_CLASS_VERSION = 0x0002
 
 DEFAULT_GAMMA_VAL = 22
@@ -247,6 +247,10 @@ MAX_OVERSCAN = 200
 DEFAULT_EDGE_WEIGHTING = 60
 MIN_EDGE_WEIGHTING = 10
 MAX_EDGE_WEIGHTING = 200
+
+DEFAULT_WEIGHT_LIMIT = 12
+MIN_WEIGHT_LIMIT = 0
+MAX_WEIGHT_LIMIT = 255
 
 DEFAULT_ANALYZE_SIZE = 1
 MIN_ANALYZE_SIZE = 0
@@ -734,9 +738,10 @@ class ControllerConfig:
         self.numReqChannels = 0
         self.analyzeSize = DEFAULT_ANALYZE_SIZE
         self.edgeWeighting = DEFAULT_EDGE_WEIGHTING
+        self.weightLimit = DEFAULT_WEIGHT_LIMIT
         self.overscan = DEFAULT_OVERSCAN
         
-        eedata = self.ctrl.read_ee_data(1, 8 + len(self.numAreas) + NCHANNELS * 6)
+        eedata = self.ctrl.read_ee_data(1, 9 + len(self.numAreas) + NCHANNELS * 6)
         #print "read eedata:", eedata
         configValidId = eedata[0] + eedata[1] * 256
         if configValidId == CONFIG_VALID_ID:
@@ -753,6 +758,8 @@ class ControllerConfig:
                 self.overscan = max(min(eedata[p], MAX_OVERSCAN), MIN_OVERSCAN)
                 self.analyzeSize = max(min(eedata[p + 1], MAX_ANALYZE_SIZE), MIN_ANALYZE_SIZE)
                 self.edgeWeighting = max(min(eedata[p + 2], MAX_EDGE_WEIGHTING), MIN_EDGE_WEIGHTING)
+                if self.configVersion > 2:
+                    self.weightLimit = max(min(eedata[p + 3], MAX_WEIGHT_LIMIT), MIN_WEIGHT_LIMIT)
         else:
             configVersionStr = ""
         self.version = "USB:{0:04X} PWM:{1:04X} CONFIG:{2}".format(self.ctrl.version, self.ctrl.get_pwm_version(), configVersionStr)
@@ -828,6 +835,7 @@ class ControllerConfig:
         eedata.append(self.overscan)
         eedata.append(self.analyzeSize)
         eedata.append(self.edgeWeighting)
+        eedata.append(self.weightLimit)
 
         self.numReqChannels = 0
         while len(pwmChannelMap) < NCHANNELS:

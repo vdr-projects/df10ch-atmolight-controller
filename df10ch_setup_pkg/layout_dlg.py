@@ -30,6 +30,7 @@ class LayoutDialog:
     def __init__(self, areasDlg, master=None, **args):
         self.areasDlg = areasDlg
         self.edgeWeighting = 0
+        self.weightLimit = 0
         self.analyzeSize = 0
         self.overscan = 0
         self.numAreas = [ 0 ] * device_drv.NumBaseAreas()
@@ -103,6 +104,11 @@ class LayoutDialog:
         self.sbWeight = Spinbox(root, textvariable=self.varWeight, from_=device_drv.MIN_EDGE_WEIGHTING, to=device_drv.MAX_EDGE_WEIGHTING, increment=1, width=4)
         self.sbWeight.grid(row=4, column=7, padx=5, pady=5, sticky=W)
         
+        Label(root, text="Weight limit:").grid(row=5, column=6, sticky=E)
+        self.varWeightLimit = StringVar()
+        self.sbWeightLimit = Spinbox(root, textvariable=self.varWeightLimit, from_=device_drv.MIN_WEIGHT_LIMIT, to=device_drv.MAX_WEIGHT_LIMIT, increment=1, width=4)
+        self.sbWeightLimit.grid(row=5, column=7, padx=5, pady=5, sticky=W)
+        
         self.btShowEdgeWeighting = Button(root, text="Show edge weighting", command=self.cbShowEdgeWeighting)
         self.btShowEdgeWeighting.grid(row=6, column=0, columnspan=7, padx=20, pady=20, ipadx=5, sticky=E)
 
@@ -114,7 +120,7 @@ class LayoutDialog:
 
     def cbShowEdgeWeighting(self):
         self.applyValues()
-        self.areasDlg.showEdgeWeighting(self.edgeWeighting, self.root.winfo_toplevel())
+        self.areasDlg.showEdgeWeighting(self.edgeWeighting, self.weightLimit, self.root.winfo_toplevel())
     
     def cbApply(self):
         self.applyValues()
@@ -125,11 +131,13 @@ class LayoutDialog:
         self.overscan = int(self.varOverscan.get())
         self.analyzeSize = int(self.varAnalyzeSize.get())
         self.edgeWeighting = int(self.varWeight.get())
+        self.weightLimit = int(self.varWeightLimit.get())
         self.areasDlg.configAreas(self.numAreas, self.overscan, self.analyzeSize)
         
     def setLayoutFromConfig(self):
         self.analyzeSize = 0
         self.edgeWeighting = 0
+        self.weightLimit = 0
         self.overscan = 0
         self.numAreas = [ 0 ] * device_drv.NumBaseAreas()
         for ctrlId in device_drv.ConfigMap.keys():
@@ -137,6 +145,7 @@ class LayoutDialog:
             self.overscan = config.overscan
             self.analyzeSize = config.analyzeSize
             self.edgeWeighting = config.edgeWeighting
+            self.weightLimit = config.weightLimit
             for i in range(device_drv.NumBaseAreas()):
                 if config.numAreas[i] > self.numAreas[i]:
                     self.numAreas[i] = config.numAreas[i]
@@ -145,6 +154,7 @@ class LayoutDialog:
         self.varOverscan.set(self.overscan)
         self.varAnalyzeSize.set(self.analyzeSize)
         self.varWeight.set(self.edgeWeighting)
+        self.varWeightLimit.set(self.weightLimit)
         self.areasDlg.configAreas(self.numAreas, self.overscan, self.analyzeSize)
  
     def setConfigFromLayout(self):
@@ -153,6 +163,7 @@ class LayoutDialog:
             config.overscan = self.overscan
             config.analyzeSize = self.analyzeSize
             config.edgeWeighting = self.edgeWeighting
+            config.weightLimit = self.weightLimit
             for i in range(device_drv.NumBaseAreas()):
                 config.numAreas[i] = self.numAreas[i]
                 

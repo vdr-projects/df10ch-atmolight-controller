@@ -35,6 +35,7 @@ class AreasDialog:
         self.selectedArea = None
         self.selectCallbacks = list()
         self.edgeWeighting = -1
+        self.weightLimit = 0
 
     def cvX(self, x):
         return int((self.cvWidth * x) / self.aWidth)
@@ -281,7 +282,7 @@ class AreasDialog:
                 cv.itemconfigure(id, fill="", outline="#808080", width=3)
                 cv.tag_bind(id, "<Button-1>", self.cbSelectArea)
 
-    def calcEdgeWeighting(self, edgeWeighting):
+    def calcEdgeWeighting(self, edgeWeighting, weightLimit):
         w = float(edgeWeighting) / 10.0
         fHeight = float(self.aHeight - 1)
         fWidth = float(self.aWidth - 1)
@@ -305,6 +306,8 @@ class AreasDialog:
                 if self.sBottom and y >= centerY:
                     weight = max(weight, wBottom)   
                 bright = int(255.0 * weight)
+                if bright < weightLimit:
+                    bright = 0
                 px = self.cvX(x)
                 px2 = self.cvX(x + 1)
                 py = self.cvY(y)
@@ -316,13 +319,14 @@ class AreasDialog:
                 self.weightDraw.polygon([(px, py), (px2, py), (px2, py2), (px, py2)], fill=bright, outline=bBright)
         self.root.weightImg.paste(self.weightImg)
         self.edgeWeighting = edgeWeighting
+        self.weightLimit = weightLimit
         
-    def showEdgeWeighting(self, edgeWeighting, topWin):
-        if self.edgeWeighting != edgeWeighting:
+    def showEdgeWeighting(self, edgeWeighting, weightLimit, topWin):
+        if self.edgeWeighting != edgeWeighting or self.weightLimit != weightLimit:
             cursor = topWin["cursor"]
             topWin["cursor"] = "watch"
             self.root.update_idletasks()
-            self.calcEdgeWeighting(edgeWeighting)
+            self.calcEdgeWeighting(edgeWeighting, weightLimit)
             topWin["cursor"] = cursor
         if self.edgeWeighting == edgeWeighting:
             self.root.itemconfigure(self.weightImgId, state=NORMAL)
