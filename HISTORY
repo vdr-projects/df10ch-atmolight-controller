@@ -1,6 +1,9 @@
 History of changes from newest to oldest:
 -----------------------------------------
 
+Setup program version 5:
+	Added support for new dfatmo parameter "weight_limit".
+
 Setup program version 4:
 	Exchange pyusb with extracted modules from python-libusb1 project.
 	Add generating .exe file for win32 platform with py2exe.
